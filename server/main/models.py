@@ -103,7 +103,7 @@ class Days(models.Model):
 
 
 class ImidientlyAd(models.Model):
-    day = models.ForeignKey(Days, verbose_name='День')
+    day = models.ForeignKey(Days, verbose_name='День', related_name='imidientlies')
     time = models.TimeField('Время показа')
 
     content_type = models.ForeignKey(ContentType)
