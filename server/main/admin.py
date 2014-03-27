@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib import admin
-from server.main.models import Partner, ImageAd, VideoAd, TextAd, Days, Terminal, ImmediatelyAd
+from main.models import Partner, ImageAd, VideoAd, TextAd, Days, Terminal, ImmediatelyAd
 
 __author__ = 'lkot'
 
