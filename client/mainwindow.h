@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QTableWidget>
-#include <QTextEdit>
+#include <QTextBrowser>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -25,19 +25,25 @@ public:
     ~MainWindow();
     
 private:
+    void DisplayImage(QGraphicsView* view, QString path);
+
+
     Ui::MainWindow *ui;
 
     QTableWidget* bus_schedule;
 
     QLabel* news_label_time;
     QLabel* news_label_temperature;
-    QTextEdit* news_text;
+    QTextBrowser* news_text;
     QVBoxLayout* news_box;
+    QHBoxLayout* news_with_bus_schedule;
 
     QGraphicsView* video_view;
 
-    QList<QTextEdit*> text_advicements;
+    QList<QTextBrowser*> text_advicements;
     QVBoxLayout* text_box;
+
+    QGraphicsView* picture_krasnoyarsk;
 
 
 
