@@ -96,7 +96,7 @@ class Days(models.Model):
     image_ad = models.ManyToManyField(ImageAd, verbose_name='Изображение', blank=True, null=True)
     text_ad = models.ManyToManyField(TextAd, verbose_name='Тексты', blank=True, null=True)
 
-    time_for_video = models.TimeField('Интервал показа видео')
+    time_for_video = models.PositiveIntegerField('Количество показов видео', default=1)
     show_text = models.BooleanField('Показывать текст в блоке видео')
 
     time_for_text = models.TimeField('Интервал показа текста')
@@ -105,7 +105,7 @@ class Days(models.Model):
     start_time = models.TimeField('Время начала показа')
     stop_time = models.TimeField('Время остановки показа')
 
-    terminal = models.ForeignKey(Terminal, verbose_name='Терминал')
+    terminal = models.ManyToManyField(Terminal, verbose_name='Терминал')
 
     def __unicode__(self):
         return unicode(self.date)
