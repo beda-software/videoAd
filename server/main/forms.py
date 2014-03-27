@@ -31,7 +31,7 @@ class PgArrayWidget(forms.TextInput):
         )
         css = {
             'screen': (
-                "/static/libs/MultiDatesPicker_v1.6.1/css/prettify.css",
+                "/static/libs/MultiDatesPicker_v1.6.1/css/pepper-ginder-custom.css",
             )
         }
 
