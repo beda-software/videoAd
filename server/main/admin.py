@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 from main.models import Partner, ImageAd, VideoAd, TextAd, Days, Terminal, ImmediatelyAd
+from server.main.forms import PgArrayWidget
 
 __author__ = 'lkot'
 

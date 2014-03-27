@@ -1,14 +1,39 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import datetime
+
 from django.db import models
 from django.dispatch import receiver
 from django.utils.html import strip_tags
 from filebrowser.fields import FileBrowseField
 from django.db.models.signals import pre_save
-from ffvideo import VideoStream
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+from south.modelsinspector import add_introspection_rules
+
+from ffvideo import VideoStream
+from main.fields import DateArrayField
+
+add_introspection_rules([], ["^main\.fields\.DateArrayField"])
+
+class Terminal(models.Model):
+    text = models.TextField('Описание')
+    config = models.TextField('Конфигурация')
+
+    def __unicode__(self):
+        return self.text
+
+    class Meta:
+        verbose_name = 'Терминал'
+        verbose_name_plural = 'Терминалы'
+
+
+class AdMixin(models.Model):
+    terminals = models.ManyToManyField(Terminal, verbose_name='Терминалы')
+    datelist = DateArrayField(verbose_name='Даты')
+
+    class Meta:
+        abstract = True
 
 
 class Partner(models.Model):
@@ -22,7 +47,7 @@ class Partner(models.Model):
         verbose_name_plural = 'Контрагенты'
 
 
-class VideoAd(models.Model):
+class VideoAd(AdMixin, models.Model):
     file_video = FileBrowseField('Видео файл', max_length=255, blank=True, null=True)
     partner = models.ForeignKey(Partner, verbose_name='Владелец объявления')
     prolongation = models.TimeField('Длительность видео', blank=True, null=True)
@@ -35,7 +60,7 @@ class VideoAd(models.Model):
         verbose_name_plural = 'Видео (объявления)'
 
 
-class ImageAd(models.Model):
+class ImageAd(AdMixin, models.Model):
 
     def image_file(self, filename):
         return '/'.join([datetime.datetime.now().strftime('image/%Y/%m/%d'), filename])
@@ -52,7 +77,7 @@ class ImageAd(models.Model):
         verbose_name_plural = 'Изображение (объявления)'
 
 
-class TextAd(models.Model):
+class TextAd(AdMixin, models.Model):
     text = models.TextField('Содержимое объявления')
     partner = models.ForeignKey(Partner, verbose_name='Владелец объявления')
 
@@ -62,18 +87,6 @@ class TextAd(models.Model):
     class Meta:
         verbose_name = 'Текст (объявление)'
         verbose_name_plural = 'Текст (объявления)'
-
-
-class Terminal(models.Model):
-    text = models.TextField('Описание')
-    config = models.TextField('Конфигурация')
-
-    def __unicode__(self):
-        return self.text
-
-    class Meta:
-        verbose_name = 'Терминал'
-        verbose_name_plural = 'Терминалы'
 
 
 class Days(models.Model):
