@@ -21,11 +21,11 @@ class UntypedMultipleField(forms.Field):
 class TypedMultipleField(UntypedMultipleField):
     def to_python(self, value):
         value = super(TypedMultipleField, self).to_python(value)
-        if value not in validators.EMPTY_VALUES:
-            try:
-                value = map(self.coerce, value)
-            except (ValueError, TypeError):
-                raise exceptions.ValidationError(self.error_messages['invalid'])
+        # if value not in validators.EMPTY_VALUES:
+        #     try:
+        #         value = map(self.coerce, value)
+        #     except (ValueError, TypeError):
+        #         raise exceptions.ValidationError(self.error_messages['invalid'])
         return value
 
 
@@ -75,9 +75,9 @@ class ArrayField(models.Field):
 
 class DateArrayField(ArrayField):
     default_error_messages = {
-        'invalid': _(u'Enter only digits separated by commas.')
+        'invalid': _(u'Enter only date separated by commas.')
     }
-    description = _("Array of integers")
+    description = _("Array of dates")
     coerce = datetime.date
 
     def db_type(self, connection):

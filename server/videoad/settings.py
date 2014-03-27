@@ -45,8 +45,6 @@ TEMPLATE_DIRS = ()
 
 FILEBROWSER_MAX_UPLOAD_SIZE = 2147483648
 
-CKEDITOR_UPLOAD_PATH = join(MEDIA_ROOT, 'uploads')
-
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -97,32 +95,11 @@ INSTALLED_APPS = (
     'filebrowser',
     'django.contrib.admin',
     'django_extensions',
-    'ckeditor',
 )
 
 LOCAL_APPS = (
     'main',
 )
-
-CKEDITOR_CONFIGS = {
-    'default': {
-        'skin': 'moono',
-        'toolbar_Basic': [
-            ['Source', '-', 'Bold', 'Italic']
-        ],
-        'toolbar_Full': [
-            ['Source', 'Styles', 'Format', 'RemoveFormat', 'Bold', 'Italic', 'Underline', 'Strike', 'SpellChecker', 'Undo', 'Redo'],
-            ['Image'],
-            [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-            [ 'Link', 'Unlink', 'Anchor' ]
-        ],
-        'toolbar': 'Full',
-        'height': 291,
-        'width': 835,
-        'filebrowserWindowWidth': 940,
-        'filebrowserWindowHeight': 725,
-    }
-}
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

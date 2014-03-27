@@ -6,7 +6,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.utils.html import strip_tags
 from filebrowser.fields import FileBrowseField
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from south.modelsinspector import add_introspection_rules
@@ -62,10 +62,7 @@ class VideoAd(AdMixin, models.Model):
 
 class ImageAd(AdMixin, models.Model):
 
-    def image_file(self, filename):
-        return '/'.join([datetime.datetime.now().strftime('image/%Y/%m/%d'), filename])
-
-    image = models.ImageField('Изображение', upload_to=image_file)
+    image = FileBrowseField('Изображение', max_length=255)
     prolongation = models.TimeField('Длительность показа')
     partner = models.ForeignKey(Partner, verbose_name='Владелец объявления')
 
@@ -90,7 +87,7 @@ class TextAd(AdMixin, models.Model):
 
 
 class Days(models.Model):
-    date = models.DateField('Дата')
+    date = models.DateField('Дата', unique=True)
 
     video_ad = models.ManyToManyField(VideoAd, verbose_name='Видео', blank=True, null=True)
     image_ad = models.ManyToManyField(ImageAd, verbose_name='Изображение', blank=True, null=True)
@@ -134,3 +131,39 @@ def set_duration_video(sender, instance, **kwargs):
         video_stream = VideoStream(instance.file_video.path_full)
         seconds=int(video_stream.duration)
         instance.prolongation = datetime.time(hour=seconds/3600, minute=seconds/60, second=seconds%60)
+
+
+def create_update_day(sender, instance, **kwargs):
+    for date in instance.datelist:
+
+        field = ''
+
+        if sender == VideoAd:
+            field = 'video_ad'
+        elif sender == TextAd:
+            field = 'text_ad'
+        elif sender == ImageAd:
+            field = 'image_ad'
+
+        if field == '':
+            return
+
+        try:
+            day = Days.objects.get(date=date)
+        except Days.DoesNotExist:
+            day = Days(date=date,
+                       show_text=True,
+                       show_video=True,
+                       time_for_text=datetime.time(second=30),
+                       start_time=datetime.time(hour=8),
+                       stop_time=datetime.time(hour=20))
+
+            day.save()
+
+        getattr(day, field).add(instance)
+        day.save()
+
+
+post_save.connect(create_update_day, sender=VideoAd)
+post_save.connect(create_update_day, sender=TextAd)
+post_save.connect(create_update_day, sender=ImageAd)
