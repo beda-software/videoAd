@@ -102,13 +102,17 @@ class Days(models.Model):
         verbose_name_plural = 'Даты'
 
 
-class ImidientlyAd(models.Model):
-    day = models.ForeignKey(Days, verbose_name='День', related_name='imidientlies')
+class ImmediatelyAd(models.Model):
+    day = models.ForeignKey(Days, verbose_name='День', related_name='immediatelies')
     time = models.TimeField('Время показа')
 
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
+    content_type = models.ForeignKey(ContentType, verbose_name='Тип объявления')
+    object_id = models.PositiveIntegerField('ID объявления')
     content_object = generic.GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        verbose_name = 'Реклама'
+        verbose_name_plural = 'Рекламы'
 
 
 @receiver(pre_save, sender=VideoAd)

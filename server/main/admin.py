@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib import admin
-from server.main.models import Partner, ImageAd, VideoAd, TextAd, Days, Terminal, ImidientlyAd
+from server.main.models import Partner, ImageAd, VideoAd, TextAd, Days, Terminal, ImmediatelyAd
 
 __author__ = 'lkot'
 
@@ -9,15 +9,15 @@ class DefaultAdmin(admin.ModelAdmin):
     pass
 
 
-class ImidientlyAdForm(forms.ModelForm):
+class ImmediatelyAdForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(ImidientlyAdForm, self).__init__(*args, **kwargs)
+        super(ImmediatelyAdForm, self).__init__(*args, **kwargs)
         self.fields['content_type'].queryset = self.fields['content_type'].queryset.filter(model__in=['imagead', 'videoad', 'textad'])
 
 
-class ImidientlyAdInline(admin.TabularInline):
-    model = ImidientlyAd
-    form = ImidientlyAdForm
+class ImmediatelyAdInline(admin.TabularInline):
+    model = ImmediatelyAd
+    form = ImmediatelyAdForm
 
 
 class ImageAdInline(admin.TabularInline):
@@ -48,7 +48,7 @@ class VideoAdmin(admin.ModelAdmin):
 
 
 class DaysAdmin(admin.ModelAdmin):
-    inlines = [ImidientlyAdInline, ]
+    inlines = [ImmediatelyAdInline, ]
 
 
 admin.site.register(Partner, PartnerAdmin)
