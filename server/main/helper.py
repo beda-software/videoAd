@@ -1,10 +1,12 @@
 import json
 import datetime
+from main.models import VideoAd, TextAd, ImageAd
+from utils import Generator
 
 __author__ = 'lkot'
 
 
-class Generator(object):
+class PlaylistGenerator(object):
     def __init__(self, day):
         self.day = day
 
@@ -22,78 +24,74 @@ class Generator(object):
 
         return datetime.time(hour=h, minute=(seconds-(h*3600))/60, second=(seconds-(h*3600))%60)
 
-    def get_time_table(self):
+    def get_chunk_duration(self, videos):
         """
-        Generate timetable
+        Returne duration in second for chunk (video or image or text)
+        chunk elemens must have a prolongation 'property'
         """
+        return sum(map(lambda x: self.time_to_seconds(x.prolongation), videos))
 
-        day = self.day
+    def get_params_list(self, ads):
+        return map(self.get_params, ads)
 
-        playlist = []
+    def get_params(self, ad):
+        if ad._meta.model == VideoAd:
+            return {'video': ad.file_video.filename}
+        elif ad._meta.model == TextAd:
+            return {'text': ad.text}
+        elif ad._meta.model == ImageAd:
+            return {'image': ad.image.filename}
 
-        # video
-        state_video = {'time': '', 'action': [
-                           {'action': 'start_video'},]}
+    def is_immediately(self, ctime, nxd):
 
-        # text
-        state_text = {'time': '', 'action': [
-                           {'action': 'start_text'},]}
+        def get_offset(im):
+            return self.time_to_seconds(im.content_object.prolongation)
 
-        # immediately template
-        # immediately_tpl = {'time': '',
-        #                    'action': [
-        #                        {'action': 'immediately_start', 'params': ''},]},
+        immediatelies = list(self.day.immediatelies.all())
 
-        video_count = day.video_count
-        text_count  = day.text_count
+        times_im = {}
 
-        start_time = day.start_time
-        stop_time = day.stop_time
+        # Generate times_im
+        for im in immediatelies:
+            times_im[str(self.time_to_seconds(im.time))] = im
 
-        # if day.show_text:
-        #     state_video['action'].append({'action': 'start_text'})
-        #
-        # if day.show_video:
-        #     state_text['action'].append({'action': 'start_video'})
+        print times_im
 
-        # current time in second
-        ctime_s = self.time_to_seconds(start_time)
+        for time in times_im:
+            if ctime < int(time) < nxd:
+                return {'time': self.seconds_to_time(int(time)),
+                        'params': self.get_params(getattr(times_im[time], 'content_object')),
+                        'offset': get_offset(times_im[time])}
 
-        # stop time in second
-        stime_s = self.time_to_seconds(stop_time)
+        return False
 
-        time_video_s = self.time_to_seconds(video_count)
-        time_text_s = self.time_to_seconds(text_count)
-
-        # immediatelies = day.immediatelies.all()
-
-        # time loop
-        while ctime_s < stime_s:
-            sv, st = state_video.copy(), state_text.copy()
-
-            # video block
-            sv['time'] = str(self.seconds_to_time(ctime_s))
-            ctime_s += time_video_s
-
-            playlist.append(sv)
-
-            # text block
-            st['time'] = str(self.seconds_to_time(ctime_s))
-            ctime_s += time_text_s
-
-            playlist.append(st)
-
-        return playlist
-
-    def get_filelist(self):
-        pass
-
-    def run(self):
+    def get_play_list(self):
         """
         Base method, run generate playlist
         """
-        playlist = {
-            'time_table': self.get_time_table(),
-            'filelist': self.get_filelist()}
+        ad_list = Generator(list(self.day.video_ad.all()) + list(self.day.image_ad.all()))
+        chunk_len = self.day.video_count
+        block, playlist = {}, []
 
-        return json.dumps(playlist)
+        ctime = self.time_to_seconds(self.day.start_time)
+        while ctime < self.time_to_seconds(self.day.stop_time):
+            next_chunk = ad_list[:chunk_len]
+            next_chunk_duration = self.get_chunk_duration(next_chunk)
+
+            im = self.is_immediately(ctime, next_chunk_duration)
+
+            # ad
+            playlist.append({
+                'time': str(self.seconds_to_time(ctime)),
+                'params': self.get_params_list(next_chunk)})
+
+            # if im:
+            #     # immediately
+            #     playlist.append({
+            #         'time': str(im['time']),
+            #         'params': im['params']})
+            #     ctime += im['offset']
+            # else:
+            ctime += next_chunk_duration
+
+        return playlist

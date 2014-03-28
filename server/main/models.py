@@ -91,7 +91,7 @@ class ImageAd(AdMixin, models.Model):
     partner = models.ForeignKey(Partner, verbose_name='Владелец объявления')
 
     def __unicode__(self):
-        return '%s: %s' % (self.partner.name, self.image.name.split('/')[-1])
+        return '%s: %s' % (self.partner.name, self.image.filename)
 
     class Meta:
         verbose_name = 'Изображение (объявление)'
@@ -108,6 +108,11 @@ class TextAd(AdMixin, models.Model):
     class Meta:
         verbose_name = 'Текст (объявление)'
         verbose_name_plural = 'Текст (объявления)'
+
+    @property
+    def prolongation(self):
+        # TODO use Django constant
+        return datetime.time(minute=5)
 
 
 class Days(models.Model):

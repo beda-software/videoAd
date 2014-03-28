@@ -2,7 +2,7 @@ import datetime
 import json
 from django.contrib.contenttypes.models import ContentType
 
-from main.helper import Generator
+from main.helper import PlaylistGenerator
 from django.test import TestCase
 from main.models import TextAd, ImmediatelyAd, ImageAd, Partner, Days, Terminal
 from django.core.files import File
@@ -24,7 +24,7 @@ class MainTest(TestCase):
         file_image = open('tmp.jpg', 'w+')
         file_image.write('test picture')
 
-        image = ImageAd(prolongation=datetime.time(second=5),
+        image = ImageAd(prolongation=datetime.time(minute=5),
                         partner=partner)
 
         image.image.save('tmp.jpg', File(file_image))
@@ -55,7 +55,7 @@ class MainTest(TestCase):
                    terminal=terminal)
         day.save()
 
-        day.text_ad.add(text)
+        day.image_ad.add(image)
         day.save()
 
         # Create immediately
@@ -66,62 +66,33 @@ class MainTest(TestCase):
         immediately.save()
 
         # Result playlists in json
-
         result_playlist = [
-                {'time': '08:00:00',
-                 'action': [
-                     {'action': 'start_video'},
-                     {'action': 'start_text'},
-                 ]},
-                {'time': '08:05:00',
-                 'action': [
-                     {'action': 'start_text'},
-                 ]},
-                {'time': '08:07:30',
-                 'action': [
-                     {'action': 'start_video'},
-                     {'action': 'start_text'},
-                 ]},
-                {'time': '08:12:30',
-                 'action': [
-                     {'action': 'start_text'},
-                 ]},
-                {'time': '08:15:00',
-                 'action': [
-                     {'action': 'start_video'},
-                     {'action': 'start_text'},
-                 ]},
-                {'time': '08:20:00',
-                 'action': [
-                     {'action': 'start_text'},
-                 ]},
-                {'time': '08:22:30',
-                 'action': [
-                     {'action': 'start_video'},
-                     {'action': 'start_text'},
-                 ]},
-
-                # Immediately start...
-                {'time': '08:25:00',
-                'action': [
-                     {'action': 'immediately_start',
-                      'params': '/home/videoad/uploads/videos/tmp_im.jpg'},
-                ]},
-
-                {'time': '08:26:00',
-                 'action': [
-                     {'action': 'start_text'},
-                 ]},
-                {'time': '08:28:30',
-                 'action': [
-                     {'action': 'start_video'},
-                     {'action': 'start_text'},
-                 ]},
-            ]
+            {'time': '08:00', 'params': [
+                {'image': image.filename}
+            ]},
+            {'time': '08:05', 'params': [
+                {'image': image.filename}
+            ]},
+            {'time': '08:10', 'params': [
+                {'image': image.filename}
+            ]},
+            {'time': '08:15', 'params': [
+                {'image': image.filename}
+            ]},
+            {'time': '08:20', 'params': [
+                {'image': image.filename}
+            ]},
+            {'time': '08:25', 'params': [
+                {'image': image.filename}
+            ]},
+            {'time': '08:30', 'params': [
+                {'image': image.filename}
+            ]}
+        ]
 
         # Generate play list
 
-        generator = Generator(day=day)
-        playlist = generator.get_time_table()
+        g = PlaylistGenerator(day=day)
+        playlist = g.get_play_list()
 
         self.assertEqual(json.dumps(playlist), json.dumps(result_playlist))
