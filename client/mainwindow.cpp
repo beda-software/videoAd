@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->video_view = new QGraphicsView(this);
     this->video_player = new QMediaPlayer(this);
+    connect(this->video_player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(player_state_changed(QMediaPlayer::State)));
 
     this->text_box = new QVBoxLayout(this);
     int advicements_count = 3;
@@ -79,31 +80,31 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     ui->verticalLayout->addItem(main_layout);
-
-    this->displayImage(this->video_view, "kras.svg");
-
-    this->displayNextAdvicement(tr("Сегодня в красноярске был пойман педофил"));
-    this->displayNextAdvicement(tr("Ололо ололо а я быдло и хуйло!\n89313451345"));
-    this->displayNextAdvicement(tr("Ололо ололо а я быдло и хуйло!\n89313451345"));
-    this->displayNextAdvicement(tr("Ололо ололо а я быдло и хуйло!\n89313451345"));
-
-    this->displayVideo("AlexD.mp4");
 }
 
+void MainWindow::displayImage(QString path)
+{
+    this->displayImage(this->video_view, path);
+}
+
+void MainWindow::stopAll()
+{
+    if (this->video_player)
+        this->video_player->stop();
+
+    if (this->video_view->scene())
+        this->video_view->scene()->clear();
+}
 
 void MainWindow::displayImage(QGraphicsView *view, QString path)
 {
-    QGraphicsScene* scene;
     if (view->scene())
     {
         view->scene()->clear();
-        scene = view->scene();
-    }
-    else
-    {
-        scene = new QGraphicsScene(view);
+        view->scene()->deleteLater();
     }
 
+    QGraphicsScene* scene = new QGraphicsScene;
     scene->setSceneRect(view->rect());
     view->setScene(scene);
     QPixmap image(path);
@@ -113,16 +114,18 @@ void MainWindow::displayImage(QGraphicsView *view, QString path)
 
 void MainWindow::displayVideo(QString path)
 {
-    if (!this->video_view->scene())
-        this->video_view->setScene(new QGraphicsScene(this->video_view));
-    else
+    qDebug() << "start display!";
+    if (this->video_view->scene())
+    {
+        qDebug() << "delete scene";
         this->video_view->scene()->clear();
+        this->video_view->scene()->deleteLater();
+    }
 
-    QGraphicsVideoItem* item = new QGraphicsVideoItem;
-    this->video_player->setVideoOutput(item);
-    if (!this->video_view->scene())
-        this->video_view->setScene(new QGraphicsScene(this->video_view));
-    this->video_view->scene()->addItem(item);
+    this->video_item = new QGraphicsVideoItem;
+    this->video_player->setVideoOutput(this->video_item);
+    this->video_view->setScene(new QGraphicsScene);
+    this->video_view->scene()->addItem(this->video_item);
     this->video_view->show();
 
     this->video_player->setMedia(QUrl::fromLocalFile(path));
@@ -139,4 +142,10 @@ void MainWindow::displayNextAdvicement(QString text)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::player_state_changed(QMediaPlayer::State state)
+{
+    if (state == QMediaPlayer::StoppedState)
+        emit this->video_finished();
 }
