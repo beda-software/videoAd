@@ -2,9 +2,9 @@ import datetime
 import json
 from django.contrib.contenttypes.models import ContentType
 
-from server.main.helper import Generator
+from main.helper import Generator
 from django.test import TestCase
-from server.main.models import TextAd, ImmediatelyAd, ImageAd, Partner, Days, Terminal
+from main.models import TextAd, ImmediatelyAd, ImageAd, Partner, Days, Terminal
 from django.core.files import File
 
 

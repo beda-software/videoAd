@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 from main.models import Partner, ImageAd, VideoAd, TextAd, Days, Terminal, ImmediatelyAd
-from server.main.forms import PgArrayWidget
+from main.forms import PgArrayWidget
 
 __author__ = 'lkot'
 
@@ -51,7 +51,7 @@ class VideoAdmin(admin.ModelAdmin):
 class DaysAdmin(admin.ModelAdmin):
     inlines = [ImmediatelyAdInline, ]
     readonly_fields = ['date', 'video_ad', 'image_ad', 'text_ad', 'terminal']
-    fields = ['date', 'terminal', 'time_for_video', 'show_text', 'time_for_text', 'show_video', 'start_time', 'stop_time', 'video_ad', 'image_ad', 'text_ad']
+    fields = ['date', 'terminal', 'video_count', 'show_text', 'text_count', 'show_video', 'start_time', 'stop_time', 'video_ad', 'image_ad', 'text_ad']
     list_display = ['date', 'terminal']
     list_filter = ['terminal', ]
 

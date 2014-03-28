@@ -12,7 +12,7 @@ class Migration(SchemaMigration):
         db.create_table(u'main_terminal', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('text', self.gf('django.db.models.fields.TextField')()),
-            ('config', self.gf('django.db.models.fields.TextField')()),
+            ('config', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
         ))
         db.send_create_signal(u'main', ['Terminal'])
 
@@ -83,9 +83,9 @@ class Migration(SchemaMigration):
         db.create_table(u'main_days', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('date', self.gf('django.db.models.fields.DateField')()),
-            ('time_for_video', self.gf('django.db.models.fields.PositiveIntegerField')(default=1)),
+            ('video_count', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
             ('show_text', self.gf('django.db.models.fields.BooleanField')()),
-            ('time_for_text', self.gf('django.db.models.fields.PositiveIntegerField')(default=1)),
+            ('text_count', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
             ('show_video', self.gf('django.db.models.fields.BooleanField')()),
             ('start_time', self.gf('django.db.models.fields.TimeField')(default=datetime.time(8, 0))),
             ('stop_time', self.gf('django.db.models.fields.TimeField')(default=datetime.time(22, 0))),
@@ -191,9 +191,9 @@ class Migration(SchemaMigration):
             'stop_time': ('django.db.models.fields.TimeField', [], {'default': 'datetime.time(22, 0)'}),
             'terminal': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['main.Terminal']"}),
             'text_ad': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['main.TextAd']", 'null': 'True', 'blank': 'True'}),
-            'time_for_text': ('django.db.models.fields.PositiveIntegerField', [], {'default': '1'}),
-            'time_for_video': ('django.db.models.fields.PositiveIntegerField', [], {'default': '1'}),
-            'video_ad': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['main.VideoAd']", 'null': 'True', 'blank': 'True'})
+            'text_count': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
+            'video_ad': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['main.VideoAd']", 'null': 'True', 'blank': 'True'}),
+            'video_count': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'})
         },
         u'main.imagead': {
             'Meta': {'object_name': 'ImageAd'},
@@ -219,7 +219,7 @@ class Migration(SchemaMigration):
         },
         u'main.terminal': {
             'Meta': {'object_name': 'Terminal'},
-            'config': ('django.db.models.fields.TextField', [], {}),
+            'config': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'text': ('django.db.models.fields.TextField', [], {})
         },

@@ -6,7 +6,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.utils.html import strip_tags
 from filebrowser.fields import FileBrowseField
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save, post_save, m2m_changed
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from south.modelsinspector import add_introspection_rules
@@ -19,7 +19,7 @@ add_introspection_rules([], ["^main\.fields\.DateArrayField"])
 
 class Terminal(models.Model):
     text = models.TextField('Описание')
-    config = models.TextField('Конфигурация')
+    config = models.TextField('Конфигурация', null=True, blank=True)
 
     def __unicode__(self):
         return self.text
@@ -94,10 +94,10 @@ class Days(models.Model):
     image_ad = models.ManyToManyField(ImageAd, verbose_name='Изображение', blank=True, null=True)
     text_ad = models.ManyToManyField(TextAd, verbose_name='Тексты', blank=True, null=True)
 
-    time_for_video = models.PositiveIntegerField('Количество показов видео', default=1)
+    video_count = models.PositiveIntegerField('Количество показов видео', default=0)
     show_text = models.BooleanField('Показывать текст в блоке видео')
 
-    time_for_text = models.PositiveIntegerField('Количество показов текста', default=1)
+    text_count = models.PositiveIntegerField('Количество показов текста', default=0)
     show_video = models.BooleanField('Показывать видео в блоке текст')
 
     start_time = models.TimeField('Время начала показа', default=datetime.time(hour=8))
@@ -135,36 +135,38 @@ def set_duration_video(sender, instance, **kwargs):
 
 
 def create_update_day(sender, instance, **kwargs):
-    for date in instance.datelist:
 
-        field = ''
+    model, field = instance._meta.model, ''
 
-        if sender == VideoAd:
-            field = 'video_ad'
-        elif sender == TextAd:
-            field = 'text_ad'
-        elif sender == ImageAd:
-            field = 'image_ad'
+    if model == VideoAd:
+        field = 'video_ad'
+    elif model == TextAd:
+        field = 'text_ad'
+    elif model == ImageAd:
+        field = 'image_ad'
 
-        if field == '':
-            return
+    if field == '':
+        return
 
-        try:
-            day = Days.objects.get(date=date)
-        except Days.DoesNotExist:
-            day = Days(date=date,
-                       show_text=True,
-                       show_video=True,
-                       time_for_text=datetime.time(second=30),
-                       start_time=datetime.time(hour=8),
-                       stop_time=datetime.time(hour=20))
+    for terminal in instance.terminals.all():
+        for date in instance.datelist:
 
+            try:
+                day = Days.objects.get(date=date, terminal_id=terminal.pk)
+            except Days.DoesNotExist:
+                day = Days(date=date,
+                           terminal=terminal,
+                           show_text=True,
+                           show_video=True,
+                           start_time=datetime.time(hour=8),
+                           stop_time=datetime.time(hour=20))
+
+                day.save()
+
+            getattr(day, field).add(instance)
             day.save()
 
-        getattr(day, field).add(instance)
-        day.save()
 
-
-post_save.connect(create_update_day, sender=VideoAd)
-post_save.connect(create_update_day, sender=TextAd)
-post_save.connect(create_update_day, sender=ImageAd)
+m2m_changed.connect(create_update_day, sender=VideoAd.terminals.through)
+m2m_changed.connect(create_update_day, sender=TextAd.terminals.through)
+m2m_changed.connect(create_update_day, sender=ImageAd.terminals.through)
