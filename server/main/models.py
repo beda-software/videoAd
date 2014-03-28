@@ -17,6 +17,12 @@ from main.fields import DateArrayField
 add_introspection_rules([], ["^main\.fields\.DateArrayField"])
 
 
+PARTNER_TYPE = (
+    (0, 'Физическое лицо'),
+    (1, 'Юридическое лицо'),
+)
+
+
 class Terminal(models.Model):
     text = models.TextField('Описание')
     config = models.TextField('Конфигурация', null=True, blank=True)
@@ -38,10 +44,27 @@ class AdMixin(models.Model):
 
 
 class Partner(models.Model):
-    name = models.CharField('Наименование организации', max_length=255)
+
+    partner_type = models.PositiveIntegerField('Тип', choices=PARTNER_TYPE, default=0)
+
+    name = models.CharField('Полное наименование', max_length=255, blank=True, null=True)
+    short_name = models.CharField('Краткое наименование', max_length=500, blank=True, null=True)
+    legal_address = models.CharField('Юридический адрес', max_length=400, blank=True, null=True)
+    phones = models.CharField('Телефон', max_length=255, blank=True, null=True)
+    director = models.CharField('Директор', max_length=255, blank=True, null=True)
+    ogrn = models.CharField('ОГРН', max_length=255, blank=True, null=True)
+    inn = models.CharField('ИНН', max_length=50, blank=True, null=True)
+    kpp = models.CharField('КПП', max_length=50, blank=True, null=True)
+    account_number = models.CharField('Номер расчетного счета', max_length=255, blank=True, null=True)
+    bank = models.CharField('Банк', max_length=255, blank=True, null=True)
+    bik = models.CharField('БИК', max_length=100, blank=True, null=True)
+    ks = models.CharField('К/с', max_length=255, blank=True, null=True)
+
+    full_name = models.CharField('ФИО', max_length=255, blank=True, null=True)
+    passport = models.TextField('Паспортные данные с пропиской', blank=True, null=True)
 
     def __unicode__(self):
-        return self.name
+        return self.name or self.short_name or self.full_name
 
     class Meta:
         verbose_name = 'Контрагент'

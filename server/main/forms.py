@@ -21,6 +21,33 @@ def list_to_csv(value):
     return f.read()
 
 
+class SelectWidget(forms.Select):
+    def render(self, name, value, attrs=None, choices=()):
+
+        html = super(SelectWidget, self).render(name, value, attrs, choices)
+
+        scripts = '''
+            <script>
+                $(document).ready(function(){
+                    $('fieldset.grp-module').eq(2).hide();
+
+                    $('#id_partner_type').change(function(){
+                        var option = $(this).find('option:selected');
+
+                        if(option.val() == 0) {
+                            $('fieldset.grp-module').eq(2).hide();
+                            $('fieldset.grp-module').eq(1).show();
+                        } else {
+                            $('fieldset.grp-module').eq(2).show();
+                            $('fieldset.grp-module').eq(1).hide();
+                        }
+                    });
+                });
+            </script>
+        '''
+        return mark_safe('%s%s' % (html, scripts))
+
+
 class PgArrayWidget(forms.TextInput):
     class Media:
         js = (

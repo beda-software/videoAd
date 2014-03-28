@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from django import forms
 from django.contrib import admin
 from main.models import Partner, ImageAd, VideoAd, TextAd, Days, Terminal, ImmediatelyAd
 from main.forms import PgArrayWidget
+from server.main.forms import SelectWidget
 
 __author__ = 'lkot'
 
@@ -34,8 +37,43 @@ class TextAdInline(admin.TabularInline):
     model = TextAd
 
 
+class PartnerAdminForm(forms.ModelForm):
+    class Meta:
+        models = Partner
+        widgets = {
+            'partner_type': SelectWidget()
+        }
+
+
 class PartnerAdmin(admin.ModelAdmin):
     inlines = [ImageAdInline, VideoAdInline, TextAdInline]
+    form = PartnerAdminForm
+
+    fieldsets = (
+        (None, {
+           'fields': ('partner_type',)
+        }),
+        ('Физическое лицо', {
+            'fields': ('full_name',
+                       'passport',
+            )
+        }),
+        ('Юридическое лицо', {
+            'fields': ('name',
+                       'short_name',
+                       'legal_address',
+                       'phones',
+                       'director',
+                       'ogrn',
+                       'inn',
+                       'kpp',
+                       'account_number',
+                       'bank',
+                       'bik',
+                       'ks',
+            )
+        }),
+    )
 
 
 class VideoAdminForm(forms.ModelForm):

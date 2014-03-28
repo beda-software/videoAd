@@ -40,21 +40,21 @@ class Generator(object):
                            {'action': 'start_text'},]}
 
         # immediately template
-        immediately_tpl = {'time': '',
-                           'action': [
-                               {'action': 'immediately_start', 'params': ''},]},
+        # immediately_tpl = {'time': '',
+        #                    'action': [
+        #                        {'action': 'immediately_start', 'params': ''},]},
 
-        time_for_video = day.time_for_video
-        time_for_text  = day.time_for_text
+        video_count = day.video_count
+        text_count  = day.text_count
 
         start_time = day.start_time
         stop_time = day.stop_time
 
-        if day.show_text:
-            state_video['action'].append({'action': 'start_text'})
-
-        if day.show_video:
-            state_text['action'].append({'action': 'start_video'})
+        # if day.show_text:
+        #     state_video['action'].append({'action': 'start_text'})
+        #
+        # if day.show_video:
+        #     state_text['action'].append({'action': 'start_video'})
 
         # current time in second
         ctime_s = self.time_to_seconds(start_time)
@@ -62,10 +62,10 @@ class Generator(object):
         # stop time in second
         stime_s = self.time_to_seconds(stop_time)
 
-        time_video_s = self.time_to_seconds(time_for_video)
-        time_text_s = self.time_to_seconds(time_for_text)
+        time_video_s = self.time_to_seconds(video_count)
+        time_text_s = self.time_to_seconds(text_count)
 
-        immediatelies = day.immediatelies.all()
+        # immediatelies = day.immediatelies.all()
 
         # time loop
         while ctime_s < stime_s:
