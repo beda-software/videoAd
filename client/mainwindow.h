@@ -3,13 +3,15 @@
 
 #include <QMainWindow>
 #include <QTableWidget>
-#include <QTextEdit>
+#include <QTextBrowser>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QtMultimediaKit/QMediaPlayer>
-#include <QGraphicsView>
+#include <QMediaPlayer>
 #include <QSettings>
+#include <QGraphicsItem>
+#include <QGraphicsView>
+#include <QGraphicsVideoItem>
 
 
 namespace Ui {
@@ -25,19 +27,29 @@ public:
     ~MainWindow();
     
 private:
+    void displayImage(QGraphicsView* view, QString path);
+    void displayNextAdvicement(QString text);
+    void displayVideo(QString path);
+
+
     Ui::MainWindow *ui;
 
     QTableWidget* bus_schedule;
 
     QLabel* news_label_time;
     QLabel* news_label_temperature;
-    QTextEdit* news_text;
+    QTextBrowser* news_text;
     QVBoxLayout* news_box;
+    QHBoxLayout* news_with_bus_schedule;
 
     QGraphicsView* video_view;
+    QMediaPlayer* video_player;
 
-    QList<QTextEdit*> text_advicements;
+    int current_advicement_index;
+    QList<QTextBrowser*> text_advicements;
     QVBoxLayout* text_box;
+
+    QGraphicsView* picture_krasnoyarsk;
 
 
 
