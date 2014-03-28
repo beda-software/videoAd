@@ -50,6 +50,10 @@ class VideoAdmin(admin.ModelAdmin):
 
 class DaysAdmin(admin.ModelAdmin):
     inlines = [ImmediatelyAdInline, ]
+    readonly_fields = ['date', 'video_ad', 'image_ad', 'text_ad', 'terminal']
+    fields = ['date', 'terminal', 'time_for_video', 'show_text', 'time_for_text', 'show_video', 'start_time', 'stop_time', 'video_ad', 'image_ad', 'text_ad']
+    list_display = ['date', 'terminal']
+    list_filter = ['terminal', ]
 
 
 admin.site.register(Partner, PartnerAdmin)

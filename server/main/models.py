@@ -16,6 +16,7 @@ from main.fields import DateArrayField
 
 add_introspection_rules([], ["^main\.fields\.DateArrayField"])
 
+
 class Terminal(models.Model):
     text = models.TextField('Описание')
     config = models.TextField('Конфигурация')
@@ -87,7 +88,7 @@ class TextAd(AdMixin, models.Model):
 
 
 class Days(models.Model):
-    date = models.DateField('Дата', unique=True)
+    date = models.DateField('Дата')
 
     video_ad = models.ManyToManyField(VideoAd, verbose_name='Видео', blank=True, null=True)
     image_ad = models.ManyToManyField(ImageAd, verbose_name='Изображение', blank=True, null=True)
@@ -96,13 +97,13 @@ class Days(models.Model):
     time_for_video = models.PositiveIntegerField('Количество показов видео', default=1)
     show_text = models.BooleanField('Показывать текст в блоке видео')
 
-    time_for_text = models.TimeField('Интервал показа текста')
+    time_for_text = models.PositiveIntegerField('Количество показов текста', default=1)
     show_video = models.BooleanField('Показывать видео в блоке текст')
 
-    start_time = models.TimeField('Время начала показа')
-    stop_time = models.TimeField('Время остановки показа')
+    start_time = models.TimeField('Время начала показа', default=datetime.time(hour=8))
+    stop_time = models.TimeField('Время остановки показа', default=datetime.time(hour=22))
 
-    terminal = models.ManyToManyField(Terminal, verbose_name='Терминал')
+    terminal = models.ForeignKey(Terminal, verbose_name='Терминал')
 
     def __unicode__(self):
         return unicode(self.date)
