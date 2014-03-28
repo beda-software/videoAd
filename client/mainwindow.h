@@ -7,9 +7,11 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QtMultimediaKit/QMediaPlayer>
-#include <QGraphicsView>
+#include <QMediaPlayer>
 #include <QSettings>
+#include <QGraphicsItem>
+#include <QGraphicsView>
+#include <QGraphicsVideoItem>
 
 
 namespace Ui {
@@ -25,7 +27,9 @@ public:
     ~MainWindow();
     
 private:
-    void DisplayImage(QGraphicsView* view, QString path);
+    void displayImage(QGraphicsView* view, QString path);
+    void displayNextAdvicement(QString text);
+    void displayVideo(QString path);
 
 
     Ui::MainWindow *ui;
@@ -39,7 +43,9 @@ private:
     QHBoxLayout* news_with_bus_schedule;
 
     QGraphicsView* video_view;
+    QMediaPlayer* video_player;
 
+    int current_advicement_index;
     QList<QTextBrowser*> text_advicements;
     QVBoxLayout* text_box;
 

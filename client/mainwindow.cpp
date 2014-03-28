@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -27,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     news_labels->addWidget(this->news_label_time);
 
     this->picture_krasnoyarsk = new QGraphicsView(this);
-    this->picture_krasnoyarsk->setMaximumSize(60, 80);
+    this->picture_krasnoyarsk->setMaximumSize(80, 100);
     QHBoxLayout* news_header = new QHBoxLayout(this);
     news_header->addWidget(this->picture_krasnoyarsk);
     news_header->addSpacerItem(new QSpacerItem(1000, 10, QSizePolicy::Maximum));
@@ -43,9 +44,11 @@ MainWindow::MainWindow(QWidget *parent) :
     this->news_with_bus_schedule->addLayout(this->news_box);
 
     this->video_view = new QGraphicsView(this);
+    this->video_player = new QMediaPlayer(this);
 
     this->text_box = new QVBoxLayout(this);
     int advicements_count = 3;
+    this->current_advicement_index = 0;
     for (int i = 0; i < advicements_count; i++)
     {
         QTextBrowser* advicement = new QTextBrowser(this);
@@ -77,13 +80,59 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->verticalLayout->addItem(main_layout);
 
-    this->DisplayImage(this->picture_krasnoyarsk, "kras.svg");
+    this->displayImage(this->video_view, "kras.svg");
+
+    this->displayNextAdvicement(tr("Сегодня в красноярске был пойман педофил"));
+    this->displayNextAdvicement(tr("Ололо ололо а я быдло и хуйло!\n89313451345"));
+    this->displayNextAdvicement(tr("Ололо ололо а я быдло и хуйло!\n89313451345"));
+    this->displayNextAdvicement(tr("Ололо ололо а я быдло и хуйло!\n89313451345"));
+
+    this->displayVideo("AlexD.mp4");
 }
 
 
-void MainWindow::DisplayImage(QGraphicsView *view, QString path)
+void MainWindow::displayImage(QGraphicsView *view, QString path)
 {
+    QGraphicsScene* scene;
+    if (view->scene())
+    {
+        view->scene()->clear();
+        scene = view->scene();
+    }
+    else
+    {
+        scene = new QGraphicsScene(view);
+    }
 
+    scene->setSceneRect(view->rect());
+    view->setScene(scene);
+    QPixmap image(path);
+    scene->addPixmap(image.scaled(view->size()));
+    view->show();
+}
+
+void MainWindow::displayVideo(QString path)
+{
+    if (!this->video_view->scene())
+        this->video_view->setScene(new QGraphicsScene(this->video_view));
+    else
+        this->video_view->scene()->clear();
+
+    QGraphicsVideoItem* item = new QGraphicsVideoItem;
+    this->video_player->setVideoOutput(item);
+    if (!this->video_view->scene())
+        this->video_view->setScene(new QGraphicsScene(this->video_view));
+    this->video_view->scene()->addItem(item);
+    this->video_view->show();
+
+    this->video_player->setMedia(QUrl::fromLocalFile(path));
+    this->video_player->play();
+}
+
+void MainWindow::displayNextAdvicement(QString text)
+{
+    this->text_advicements[this->current_advicement_index]->setText(text);
+    this->current_advicement_index = (this->current_advicement_index + 1) % this->text_advicements.length();
 }
 
 
