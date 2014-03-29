@@ -147,3 +147,18 @@ void MainWindow::player_state_changed(QMediaPlayer::State state)
     if (state == QMediaPlayer::StoppedState)
         emit this->video_finished();
 }
+
+void MainWindow::setBus(QHash<QString, QString> buses)
+{
+    this->bus_schedule->clear();
+
+    QStringList keys = buses.keys();
+    for (int i = 0; i < keys.length(); i++)
+    {
+        this->bus_schedule->setItem(i, 0, new QTableWidgetItem(keys[i]));
+        this->bus_schedule->setItem(i, 1, new QTableWidgetItem(buses[keys[i]]));
+    }
+
+    this->bus_schedule->resizeRowsToContents();
+    this->bus_schedule->resizeColumnsToContents();
+}

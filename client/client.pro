@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 
-QT       += core widgets multimedia multimediawidgets
+QT       += core widgets multimedia multimediawidgets xml network
 
 TARGET = client
 TEMPLATE = app

@@ -1,6 +1,6 @@
 #include "taskmanager.h"
 
-TaskManager::TaskManager(MainWindow *window, QObject *parent) :
+TaskManager::TaskManager(MainWindow *window, ContentLoader *loader, QObject *parent) :
     QObject(parent)
 {
     QSettings settings;
@@ -11,6 +11,7 @@ TaskManager::TaskManager(MainWindow *window, QObject *parent) :
     this->current_played_time = QTime::currentTime();
     this->current_text_index = this->current_video_index = 0;
     this->main_window = window;
+    this->content_loader = loader;
 
     this->image_finish_timer = new QTimer();
     connect(this->image_finish_timer, SIGNAL(timeout()), this, SLOT(video_finished()));
@@ -22,6 +23,10 @@ TaskManager::TaskManager(MainWindow *window, QObject *parent) :
     this->update_timer = new QTimer();
     connect(this->update_timer, SIGNAL(timeout()), this, SLOT(update()));
     this->update_timer->start(1000);
+
+    this->load_bus_timer = new QTimer();
+    connect(this->load_bus_timer, SIGNAL(timeout()), this, SLOT(load_bus()));
+    this->load_bus_timer->start(1000);
 }
 
 void TaskManager::update()
@@ -167,4 +172,16 @@ void TaskManager::updatePlaylistFromFile(QString filename)
         QTime time = QTime::fromString(time_string, "hh:mm:ss");
         this->play_list[time] = contents;
     }
+}
+
+void TaskManager::load_bus()
+{
+    this->load_bus_timer->stop();
+    this->main_window->setBus(this->content_loader->LoadBus());
+    this->load_bus_timer->start();
+}
+
+void TaskManager::load_news()
+{
+
 }
