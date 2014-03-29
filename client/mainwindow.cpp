@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->bus_schedule->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     this->bus_schedule->resizeColumnsToContents();
     this->bus_schedule->resizeRowsToContents();
+    this->bus_schedule->verticalHeader()->hide();
+    this->bus_schedule->horizontalHeader()->hide();
 
     this->news_label_temperature = new QLabel("--------", this);
     QFont label_font = this->news_label_temperature->font();
@@ -54,6 +56,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->video_view = new QGraphicsView(this);
     QGraphicsScene* scene = new QGraphicsScene;
     this->video_view->setScene(scene);
+    this->video_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->video_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     this->video_player = new QMediaPlayer(this);
     connect(this->video_player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(player_state_changed(QMediaPlayer::State)));
@@ -158,6 +162,9 @@ void MainWindow::player_state_changed(QMediaPlayer::State state)
 
 void MainWindow::setBus(QMap<int, QString> buses)
 {
+    QFont item_font = this->news_label_temperature->font();
+    item_font.setPixelSize(24);
+
     this->bus_schedule->clear();
 
     QList<int> keys = buses.keys();
@@ -165,8 +172,13 @@ void MainWindow::setBus(QMap<int, QString> buses)
     this->bus_schedule->setColumnCount(2);
     for (int i = 0; i < keys.length(); i++)
     {
-        this->bus_schedule->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(keys[i])));
-        this->bus_schedule->setItem(i, 1, new QTableWidgetItem(buses[keys[i]]));
+        QTableWidgetItem* bus = new QTableWidgetItem(QString("%1").arg(keys[i]));
+        bus->setFont(item_font);
+        this->bus_schedule->setItem(i, 0, bus);
+
+        QTableWidgetItem* next_time = new QTableWidgetItem(buses[keys[i]]);
+        next_time->setFont(item_font);
+        this->bus_schedule->setItem(i, 1, next_time);
     }
 
     this->bus_schedule->resizeRowsToContents();
