@@ -36,8 +36,18 @@ MainWindow::MainWindow(QWidget *parent) :
     news_labels->addWidget(this->news_label_temperature);
     news_labels->addWidget(this->news_label_time);
 
+
     this->picture_krasnoyarsk = new QGraphicsView(this);
+    QGraphicsScene *picture_scene = new QGraphicsScene(this->picture_krasnoyarsk);
+    this->picture_krasnoyarsk->setScene(picture_scene);
+
+    QPixmap pixmap = QPixmap(":/images/krasnoyarsk.jpg");
+    QGraphicsPixmapItem* item = new QGraphicsPixmapItem(pixmap.scaled(80,100));
+    picture_scene->addItem(item);
     this->picture_krasnoyarsk->setMaximumSize(80, 100);
+    this->picture_krasnoyarsk->setFrameStyle(QFrame::NoFrame);
+    this->picture_krasnoyarsk->viewport()->setAutoFillBackground(false);
+
     QHBoxLayout* news_header = new QHBoxLayout(this);
     news_header->addWidget(this->picture_krasnoyarsk);
     news_header->addSpacerItem(new QSpacerItem(this->news_text->size().width()*3, 10, QSizePolicy::Maximum));
