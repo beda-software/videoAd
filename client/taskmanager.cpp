@@ -68,7 +68,8 @@ void TaskManager::getCurrentTasks()
 
 void TaskManager::update()
 {
-    main_window->updateLabels("-2C");
+    main_window->updateLabels(
+                this->content_loader->LoadTemperature());
 
     // не пора ли обновить текущую задачу на воспроизведение
     QTime next_task = this->getNextTaskTime();

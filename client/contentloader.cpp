@@ -96,3 +96,25 @@ QByteArray ContentLoader::request_get(QString url)
     QByteArray data = reply->readAll();
     return data;
 }
+
+QString ContentLoader::LoadTemperature(){
+    QByteArray data = this->request_get("http://export.yandex.ru/weather-ng/forecasts/29570.xml");
+    QXmlStreamReader xml;
+    QString currentTag;
+    xml.addData(data);
+    QString temperature = "";
+
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isStartElement()){
+            currentTag = xml.name().toString();
+        } else if (xml.isEndElement()){
+            currentTag = "";
+            if(xml.name()=="fact"){
+                return temperature + " C";
+            }
+        } else if (xml.isCharacters() && currentTag == "temperature")
+            temperature = xml.text().toString();
+    }
+    return temperature;
+}

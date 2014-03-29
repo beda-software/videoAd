@@ -28,6 +28,7 @@ public:
 
     QString LoadNews();
     QMap<int, QString> LoadBus();
+    QString LoadTemperature();
 
 
 private:
