@@ -22,19 +22,23 @@ class ImmediatelyAdForm(forms.ModelForm):
 class ImmediatelyAdInline(admin.TabularInline):
     model = ImmediatelyAd
     form = ImmediatelyAdForm
+    extra = 0
 
 
 class ImageAdInline(admin.TabularInline):
     model = ImageAd
+    extra = 0
 
 
 class VideoAdInline(admin.TabularInline):
     model = VideoAd
     readonly_fields = ['prolongation']
+    extra = 0
 
 
 class TextAdInline(admin.TabularInline):
     model = TextAd
+    extra = 0
 
 
 class PartnerAdminForm(forms.ModelForm):

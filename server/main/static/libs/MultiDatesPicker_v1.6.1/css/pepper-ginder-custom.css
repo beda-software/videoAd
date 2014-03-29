@@ -576,6 +576,6 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 }
 
 .ui-datepicker-inline {
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
 }
