@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>485</width>
+    <width>638</width>
     <height>525</height>
    </rect>
   </property>
@@ -14,11 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout"/>
-    </item>
-   </layout>
+   <layout class="QVBoxLayout" name="verticalLayout_2"/>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

@@ -5,9 +5,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    TaskManager task_manager;
-    MainWindow w;
-    w.show();
+    MainWindow* w = new MainWindow();
+    TaskManager* task_manager = new TaskManager(w);
+    w->show();
     
     return a.exec();
 }

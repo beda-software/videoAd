@@ -10,31 +10,63 @@
 #include <QString>
 #include <QStringList>
 #include <QFile>
+#include <QDir>
+#include <QTimer>
+#include <QSettings>
 
 #include <QDebug>
+
+#include "mainwindow.h"
 
 
 #define IMAGE_DURATION 10
 #define TEXT_DURATION 10
+#define DAYS_BACK_MAX 5
+
+
+struct Contents
+{
+    QString type;
+    QString param;
+};
 
 
 class TaskManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit TaskManager(QObject *parent = 0);
+    explicit TaskManager(MainWindow* window, QObject *parent = 0);
     
 signals:
     
 public slots:
     void update();
 
-private:
-    void updatePlaylist(QString filename);
+    void video_finished();
+    void text_finished();
 
-    QTime task_finish_time;
-    QMap<QTime, QStringList> play_list;
-    
+private:
+    void updatePlaylist();
+    void updateTasksList();
+    void updatePlaylistFromFile(QString filename);
+
+    QTime getNextTaskTime();
+
+
+    int current_video_index;
+    QStringList current_videos;
+
+    int current_text_index;
+    QStringList current_texts;
+
+    QTime current_played_time;
+    QDir* current_directory;
+    QMap<QTime, QList<Contents> > play_list;
+
+    QTimer* image_finish_timer;
+    QTimer* text_finish_timer;
+    QTimer* update_timer;
+    MainWindow* main_window;
 };
 
 #endif // TASKMANAGER_H
