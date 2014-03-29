@@ -4,7 +4,7 @@ from django import forms
 from django.contrib import admin
 from main.models import Partner, ImageAd, VideoAd, TextAd, Days, Terminal, ImmediatelyAd
 from main.forms import PgArrayWidget
-from server.main.forms import SelectWidget
+from main.forms import SelectWidget
 
 __author__ = 'lkot'
 

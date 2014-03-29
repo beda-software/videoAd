@@ -2,14 +2,14 @@ import json
 import datetime
 from main.models import VideoAd, TextAd, ImageAd
 from os import path, mkdir, rmdir
-from server.videoad import settings
+from videoad import settings
 from utils import Generator
 
 __author__ = 'lkot'
 
 
 class PlaylistGenerator(object):
-    def __init__(self, day):
+    def __init__(self, day=None):
         self.root_dir = path.join(settings.MEDIA_ROOT, 'terminals')
         self.day = day
 
@@ -107,7 +107,7 @@ class PlaylistGenerator(object):
 
         return playlist
 
-    def create_base_dir(self):
+    def mkdir_base(self):
         if not path.exists(self.root_dir):
             mkdir(self.root_dir)
 
