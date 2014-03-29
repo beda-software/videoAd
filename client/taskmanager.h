@@ -75,6 +75,7 @@ private:
 
     ContentLoader* content_loader;
     QTimer* load_bus_timer;
+    QTimer* load_news_timer;
 };
 
 #endif // TASKMANAGER_H

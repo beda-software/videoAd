@@ -1,4 +1,6 @@
 #include "contentloader.h"
+#include <QXmlStreamReader>
+#include <QDateTime>
 
 ContentLoader::ContentLoader(QObject *parent) :
     QObject(parent)
@@ -30,6 +32,56 @@ QMap<int, QString> ContentLoader::LoadBus()
         result[parts[1].toInt()] = parts[3];
     }
 
+    return result;
+}
+
+QString ContentLoader::LoadNews(){
+    QByteArray data = this->request_get("http://krasnoyarsk.sibnovosti.ru/rss");
+    QXmlStreamReader xml;
+    xml.addData(data);
+
+    QList<news> news_list;
+    news current;
+    QString currentTag;
+    QString result;
+
+    int index=0;
+
+    while (!xml.atEnd()) {
+        index ++;
+        xml.readNext();
+        if (xml.isStartElement()){
+            currentTag = xml.name().toString();
+            //qDebug() << currentTag;
+        } else if (xml.isEndElement()){
+            currentTag = "";
+            if(xml.name()=="item"){
+                     //qDebug()<< current.title << current.date << current.full_text;
+                     news_list << current;
+                     current.title="";
+                     current.date=QDateTime::currentDateTime();
+                     current.full_text="";
+
+            }
+        } else if (xml.isCharacters()){
+
+                if (currentTag == "title")
+                    current.title = xml.text().toString();
+                else if(currentTag == "full-text"){
+                    if (current.full_text.length() < 300)
+                    current.full_text += xml.text().toString();
+                    //qDebug() << currentTag << xml.text();
+                }
+                else if(currentTag == "pubDate"){
+                    current.date = QDateTime::fromString(xml.text().toString(),"ddd, d MMM yyyy hh:mm:ss");
+                    qDebug() << current.date;
+                }
+            }
+    }
+
+    foreach(news item, news_list){
+        result += "<h2>"+ item.title+"</h2><br/>"+item.full_text;
+    }
     return result;
 }
 

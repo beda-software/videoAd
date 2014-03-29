@@ -12,7 +12,13 @@
 #include <QStringList>
 
 #include <QDebug>
+#include <QDateTime>
 
+struct news{
+    QString title;
+    QDateTime date;
+    QString full_text;
+};
 
 class ContentLoader : public QObject
 {

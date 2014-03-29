@@ -185,8 +185,14 @@ void MainWindow::setBus(QMap<int, QString> buses)
     this->bus_schedule->resizeColumnsToContents();
 }
 
+
 void MainWindow::updateLabels(QString temperature)
 {
     this->news_label_temperature->setText(temperature);
     this->news_label_time->setText(QTime::currentTime().toString("hh:mm"));
+}
+
+void MainWindow::setNews(QString news_text){
+    this->news_text->setText(news_text);
+    this->news_text->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
