@@ -56,7 +56,6 @@ private:
     QGraphicsView* video_view;
     QMediaPlayer* video_player;
     QGraphicsVideoItem* video_item;
-    QGraphicsPixmapItem* pixmap_item;
 
     int current_advicement_index;
     QList<QTextBrowser*> text_advicements;

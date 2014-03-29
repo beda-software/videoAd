@@ -43,9 +43,14 @@ MainWindow::MainWindow(QWidget *parent) :
     this->news_with_bus_schedule->addSpacerItem(new QSpacerItem(100, 10, QSizePolicy::Maximum));
     this->news_with_bus_schedule->addLayout(this->news_box);
 
+
     this->video_view = new QGraphicsView(this);
+    QGraphicsScene* scene = new QGraphicsScene;
+    this->video_view->setScene(scene);
+
     this->video_player = new QMediaPlayer(this);
     connect(this->video_player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(player_state_changed(QMediaPlayer::State)));
+
 
     this->text_box = new QVBoxLayout(this);
     int advicements_count = 3;
@@ -92,40 +97,31 @@ void MainWindow::stopAll()
     if (this->video_player)
         this->video_player->stop();
 
-    if (this->video_view->scene())
-        this->video_view->scene()->clear();
+//    if (this->video_view->scene())
+//        this->video_view->scene()->clear();
 }
 
 void MainWindow::displayImage(QGraphicsView *view, QString path)
 {
-    if (view->scene())
-    {
-        view->scene()->clear();
-        view->scene()->deleteLater();
-    }
+    this->video_player->stop();
+    view->scene()->clear();
+    view->scene()->setSceneRect(view->rect());
 
-    QGraphicsScene* scene = new QGraphicsScene;
-    scene->setSceneRect(view->rect());
-    view->setScene(scene);
     QPixmap image(path);
-    scene->addPixmap(image.scaled(view->size()));
+    view->scene()->addPixmap(image.scaled(view->size()));
     view->show();
 }
 
 void MainWindow::displayVideo(QString path)
 {
-    qDebug() << "start display!";
-    if (this->video_view->scene())
-    {
-        qDebug() << "delete scene";
-        this->video_view->scene()->clear();
-        this->video_view->scene()->deleteLater();
-    }
+    qDebug() << "display video";
+    this->video_player->stop();
+    this->video_view->scene()->clear();
+    this->video_view->scene()->setSceneRect(this->video_view->rect());
 
-    this->video_item = new QGraphicsVideoItem;
-    this->video_player->setVideoOutput(this->video_item);
-    this->video_view->setScene(new QGraphicsScene);
-    this->video_view->scene()->addItem(this->video_item);
+    QGraphicsVideoItem* item = new QGraphicsVideoItem;
+    this->video_player->setVideoOutput(item);
+    this->video_view->scene()->addItem(item);
     this->video_view->show();
 
     this->video_player->setMedia(QUrl::fromLocalFile(path));

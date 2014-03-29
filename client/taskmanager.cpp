@@ -34,6 +34,9 @@ void TaskManager::update()
 
 void TaskManager::video_finished()
 {
+    qDebug() << "finished";
+    this->image_finish_timer->stop();
+
     if (this->current_videos.length() == 0)
         return;
 
@@ -57,6 +60,7 @@ void TaskManager::video_finished()
 
 void TaskManager::text_finished()
 {
+    this->text_finish_timer->stop();
     if (this->current_texts.length() == 0)
         return;
 
