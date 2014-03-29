@@ -49,11 +49,14 @@ public slots:
     void load_bus();
     void load_news();
 
+private slots:
+    void getCurrentTasks();
+
+
 private:
     void updatePlaylist();
     void updateTasksList();
     void updatePlaylistFromFile(QString filename);
-    void getCurrentTasks();
 
     QTime getNextTaskTime();
 

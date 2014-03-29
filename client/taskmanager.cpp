@@ -34,7 +34,7 @@ TaskManager::TaskManager(MainWindow *window, ContentLoader *loader, QObject *par
     this->load_news_timer->start(10 * 60 * 1000);
     this->load_news();
 
-    this->getCurrentTasks();
+    QTimer::singleShot(1000, this, SLOT(getCurrentTasks()));
 }
 
 
