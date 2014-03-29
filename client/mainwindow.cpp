@@ -16,14 +16,19 @@ MainWindow::MainWindow(QWidget *parent) :
     this->bus_schedule->resizeColumnsToContents();
     this->bus_schedule->resizeRowsToContents();
 
-    this->news_label_temperature = new QLabel("-2C", this);
+    this->news_label_temperature = new QLabel("--------", this);
+    QFont label_font = this->news_label_temperature->font();
+    label_font.setBold(true);
+    label_font.setPointSize(30);
     this->news_label_temperature->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    this->news_label_time = new QLabel("14:88", this);
+    this->news_label_time = new QLabel("--------", this);
     this->news_label_time->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    this->news_label_temperature->setFont(label_font);
+    this->news_label_time->setFont(label_font);
+
     this->news_text = new QTextBrowser(this);
     this->news_text->setFrameStyle(QFrame::NoFrame);
     this->news_text->viewport()->setAutoFillBackground(false);
-    this->news_text->setText("i3qgoiqoiqoerhoiqerhgioqeriogqoeirghioqerhgioqrehgoqhergohqerupoghqpeourhgpuoqehpouregpu");
 
     QVBoxLayout* news_labels = new QVBoxLayout(this);
     news_labels->addWidget(this->news_label_temperature);
@@ -88,6 +93,8 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     ui->centralWidget->layout()->addItem(main_layout);
+
+    this->news_label_temperature->setText("");
 }
 
 void MainWindow::displayImage(QString path)
@@ -164,4 +171,10 @@ void MainWindow::setBus(QMap<int, QString> buses)
 
     this->bus_schedule->resizeRowsToContents();
     this->bus_schedule->resizeColumnsToContents();
+}
+
+void MainWindow::updateLabels(QString temperature)
+{
+    this->news_label_temperature->setText(temperature);
+    this->news_label_time->setText(QTime::currentTime().toString("hh:mm"));
 }

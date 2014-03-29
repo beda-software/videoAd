@@ -31,6 +31,8 @@ TaskManager::TaskManager(MainWindow *window, ContentLoader *loader, QObject *par
 
 void TaskManager::update()
 {
+    main_window->updateLabels("-2C");
+
     // не пора ли обновить текущую задачу на воспроизведение
     QTime next_task = this->getNextTaskTime();
     if (!next_task.isNull() && QTime::currentTime() > next_task)
