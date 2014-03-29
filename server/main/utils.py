@@ -10,6 +10,8 @@ class Generator(object):
 
     def __getitem__(self, item):
         if isinstance(item, slice):
+            if not self.array:
+                return []
             start = item.start if item.start else 0
             self.index = (self.index + start) % len(self.array)
             return [self[0] for i in range(item.stop - start)]

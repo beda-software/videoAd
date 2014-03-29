@@ -90,8 +90,8 @@ class ImageAd(AdMixin, models.Model):
     prolongation = models.TimeField('Длительность показа')
     partner = models.ForeignKey(Partner, verbose_name='Владелец объявления')
 
-    def __unicode__(self):
-        return '%s: %s' % (self.partner.name, self.image.filename)
+    # def __unicode__(self):
+    #     return '%s: %s' % (self.partner.name, self.image.filename)
 
     class Meta:
         verbose_name = 'Изображение (объявление)'

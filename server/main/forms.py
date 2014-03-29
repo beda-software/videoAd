@@ -67,7 +67,7 @@ class PgArrayWidget(forms.TextInput):
         if value is not None:
             value = list_to_csv(value)
 
-        final_attrs = self.build_attrs(attrs, type=self.input_type, name=name)
+        final_attrs = self.build_attrs(attrs, type='hidden', name=name)
 
         attr_id = final_attrs['id']
 
@@ -79,6 +79,7 @@ class PgArrayWidget(forms.TextInput):
 
         return mark_safe('''
             <input%s />
+            <div style="height: 210px; width: 200px;" id="alt_%s"></div>
             <script>
-                $('#%s').multiDatesPicker({dateFormat: "yy-mm-dd"%s});
-            </script>''' % (flatatt(final_attrs), attr_id, cdates))
+                $('#alt_%s').multiDatesPicker({dateFormat: "yy-mm-dd"%s, altField: "%s"});
+            </script>''' % (flatatt(final_attrs), attr_id, attr_id, cdates, attr_id))
