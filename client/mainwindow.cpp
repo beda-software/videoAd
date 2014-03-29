@@ -122,6 +122,7 @@ void MainWindow::displayVideo(QString path)
     this->video_view->scene()->setSceneRect(this->video_view->rect());
 
     QGraphicsVideoItem* item = new QGraphicsVideoItem;
+    item->setSize(this->video_view->size());
     this->video_player->setVideoOutput(item);
     this->video_view->scene()->addItem(item);
     this->video_view->show();
