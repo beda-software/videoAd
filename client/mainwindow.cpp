@@ -58,6 +58,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->video_view->setScene(scene);
     this->video_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->video_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->video_view->setFrameStyle(QFrame::NoFrame);
+    this->video_view->viewport()->setAutoFillBackground(false);
 
     this->video_player = new QMediaPlayer(this);
     connect(this->video_player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(player_state_changed(QMediaPlayer::State)));

@@ -33,7 +33,38 @@ TaskManager::TaskManager(MainWindow *window, ContentLoader *loader, QObject *par
     connect(this->load_news_timer, SIGNAL(timeout()), this, SLOT(load_news()));
     this->load_news_timer->start(10 * 60 * 1000);
     this->load_news();
+
+    this->getCurrentTasks();
 }
+
+
+void TaskManager::getCurrentTasks()
+{
+    QList<QTime> times = this->play_list.keys();
+    int minsecs = -80000;
+    QTime result;
+    foreach (QTime time, times)
+    {
+        int secs_to = this->current_played_time.secsTo(time);
+        if (minsecs < secs_to && secs_to < 0)
+        {
+            minsecs = secs_to;
+            result = time;
+        }
+    }
+
+    QList<Contents> contents = this->play_list[result];
+    this->current_played_time = result;
+    foreach (Contents content, contents)
+        if (content.type == "video")
+            this->current_videos.append(content.param);
+        else
+            this->current_texts.append(content.param);
+
+    this->text_finished();
+    this->video_finished();
+}
+
 
 void TaskManager::update()
 {
@@ -47,7 +78,6 @@ void TaskManager::update()
 
 void TaskManager::video_finished()
 {
-    qDebug() << "finished";
     this->image_finish_timer->stop();
 
     if (this->current_videos.length() == 0)
@@ -98,9 +128,6 @@ void TaskManager::updateTasksList()
             this->current_videos.append(content.param);
         else
             this->current_texts.append(content.param);
-
-    qDebug() << this->current_videos;
-    qDebug() << this->current_texts;
 
     this->text_finished();
     this->video_finished();

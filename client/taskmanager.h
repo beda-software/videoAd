@@ -53,6 +53,7 @@ private:
     void updatePlaylist();
     void updateTasksList();
     void updatePlaylistFromFile(QString filename);
+    void getCurrentTasks();
 
     QTime getNextTaskTime();
 
