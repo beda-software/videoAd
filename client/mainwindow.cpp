@@ -9,11 +9,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     this->bus_schedule = new QTableWidget(1, 2, this);
+    //this->bus_schedule->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    this->bus_schedule->setFrameStyle(QFrame::NoFrame);
+    this->bus_schedule->viewport()->setAutoFillBackground(false);
     this->bus_schedule->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     this->bus_schedule->resizeColumnsToContents();
     this->bus_schedule->resizeRowsToContents();
-    this->bus_schedule->setFrameStyle(QFrame::NoFrame);
-    this->bus_schedule->viewport()->setAutoFillBackground(false);
 
     this->news_label_temperature = new QLabel("-2C", this);
     this->news_label_temperature->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
@@ -22,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->news_text = new QTextBrowser(this);
     this->news_text->setFrameStyle(QFrame::NoFrame);
     this->news_text->viewport()->setAutoFillBackground(false);
+    this->news_text->setText("i3qgoiqoiqoerhoiqerhgioqeriogqoeirghioqerhgioqrehgoqhergohqerupoghqpeourhgpuoqehpouregpu");
 
     QVBoxLayout* news_labels = new QVBoxLayout(this);
     news_labels->addWidget(this->news_label_temperature);
@@ -31,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->picture_krasnoyarsk->setMaximumSize(80, 100);
     QHBoxLayout* news_header = new QHBoxLayout(this);
     news_header->addWidget(this->picture_krasnoyarsk);
-    news_header->addSpacerItem(new QSpacerItem(1000, 10, QSizePolicy::Maximum));
+    news_header->addSpacerItem(new QSpacerItem(this->news_text->size().width()*3, 10, QSizePolicy::Maximum));
     news_header->addItem(news_labels);
 
     this->news_box = new QVBoxLayout(this);
@@ -40,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->news_with_bus_schedule = new QHBoxLayout(this);
     this->news_with_bus_schedule->addWidget(this->bus_schedule);
-    this->news_with_bus_schedule->addSpacerItem(new QSpacerItem(100, 10, QSizePolicy::Maximum));
+    //this->news_with_bus_schedule->addSpacerItem(new QSpacerItem(100, 10, QSizePolicy::Maximum));
     this->news_with_bus_schedule->addLayout(this->news_box);
 
 
@@ -65,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
 
-    bool vertical = true;
+    bool vertical = false;
     QLayout* main_layout;
     if (vertical)
     {
@@ -75,16 +77,17 @@ MainWindow::MainWindow(QWidget *parent) :
         main_layout->addItem(this->text_box);
     }
     else // horizontal
-    {
+    {   
         QVBoxLayout* video_with_advicements = new QVBoxLayout();
         video_with_advicements->addWidget(this->video_view);
+        video_with_advicements->addItem(this->text_box);
 
         main_layout = new QHBoxLayout(this);
         main_layout->addItem(this->news_with_bus_schedule);
-        main_layout->addWidget(this->video_view);
+        main_layout->addItem(video_with_advicements);
     }
 
-    ui->verticalLayout->addItem(main_layout);
+    ui->centralWidget->layout()->addItem(main_layout);
 }
 
 void MainWindow::displayImage(QString path)
@@ -114,7 +117,6 @@ void MainWindow::displayImage(QGraphicsView *view, QString path)
 
 void MainWindow::displayVideo(QString path)
 {
-    qDebug() << "display video";
     this->video_player->stop();
     this->video_view->scene()->clear();
     this->video_view->scene()->setSceneRect(this->video_view->rect());
