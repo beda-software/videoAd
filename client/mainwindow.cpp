@@ -148,14 +148,16 @@ void MainWindow::player_state_changed(QMediaPlayer::State state)
         emit this->video_finished();
 }
 
-void MainWindow::setBus(QHash<QString, QString> buses)
+void MainWindow::setBus(QMap<int, QString> buses)
 {
     this->bus_schedule->clear();
 
-    QStringList keys = buses.keys();
+    QList<int> keys = buses.keys();
+    this->bus_schedule->setRowCount(keys.length());
+    this->bus_schedule->setColumnCount(2);
     for (int i = 0; i < keys.length(); i++)
     {
-        this->bus_schedule->setItem(i, 0, new QTableWidgetItem(keys[i]));
+        this->bus_schedule->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(keys[i])));
         this->bus_schedule->setItem(i, 1, new QTableWidgetItem(buses[keys[i]]));
     }
 

@@ -8,10 +8,12 @@ ContentLoader::ContentLoader(QObject *parent) :
     this->bus_stop_number = settings.value("bus_stop_number", 1).toInt();
 }
 
-QHash<QString, QString> ContentLoader::LoadBus()
+QMap<int, QString> ContentLoader::LoadBus()
 {
     QString url = QString("http://mu-kgt.ru/externalservice/strittv/getStopArriveTime.php?stop=%1").arg(this->bus_stop_number);
-    QByteArray data = this->request_get(url);
+    QString data = this->request_get(url);
+
+    data = "<html>" + data + "</html>";
 
     QDomDocument document;
     QString errors;
@@ -20,13 +22,12 @@ QHash<QString, QString> ContentLoader::LoadBus()
 
     QDomElement doc_elem = document.documentElement();
     QDomNodeList node_list = doc_elem.elementsByTagName("row");
-    QHash<QString, QString> result;
+    QMap<int, QString> result;
     for (int i = 0; i < node_list.length(); i++)
     {
         QString text = node_list.at(i).toElement().text();
-        qDebug() << text;
         QStringList parts = text.split(",");
-        result[parts[1]] = parts[3];
+        result[parts[1].toInt()] = parts[3];
     }
 
     return result;

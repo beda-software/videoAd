@@ -26,7 +26,7 @@ TaskManager::TaskManager(MainWindow *window, ContentLoader *loader, QObject *par
 
     this->load_bus_timer = new QTimer();
     connect(this->load_bus_timer, SIGNAL(timeout()), this, SLOT(load_bus()));
-    this->load_bus_timer->start(1000);
+    this->load_bus_timer->start(5 * 1000);
 }
 
 void TaskManager::update()

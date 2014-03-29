@@ -21,7 +21,7 @@ public:
     ContentLoader(QObject *parent = 0);
 
     QString LoadNews();
-    QHash<QString, QString> LoadBus();
+    QMap<int, QString> LoadBus();
 
 
 private:

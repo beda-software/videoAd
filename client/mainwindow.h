@@ -29,7 +29,7 @@ public:
     void displayVideo(QString path);
     void displayImage(QString path);
 
-    void setBus(QHash<QString, QString> buses);
+    void setBus(QMap<int, QString> buses);
     void setNews(QString news_text);
 
     explicit MainWindow(QWidget *parent = 0);
