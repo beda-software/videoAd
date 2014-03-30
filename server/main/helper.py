@@ -1,7 +1,8 @@
 import json
 import datetime
 from main.models import VideoAd, TextAd, ImageAd
-from os import path, mkdir, rmdir
+from os import path, mkdir, symlink, unlink
+from shutil import rmtree
 from videoad import settings
 from utils import Generator
 
@@ -12,6 +13,12 @@ class PlaylistGenerator(object):
     def __init__(self, day=None):
         self.root_dir = path.join(settings.MEDIA_ROOT, 'terminals')
         self.day = day
+
+        if day:
+            self.terminal_pk = self.day.terminal.pk
+            self.date = str(self.day.date)
+            self.date_path = self.get_date_path(self.terminal_pk, self.date)
+            self.terminal_path = self.get_terminal_path(self.terminal_pk)
 
     def time_to_seconds(self, time):
         """
@@ -107,22 +114,66 @@ class PlaylistGenerator(object):
 
         return playlist
 
+    def generate_fs(self, filelist, playlist):
+        if not self.day:
+            raise Exception("Day undefined")
+
+        self.mkdir_base()
+        self.mkdir_terminal(self.terminal_pk)
+        self.mkdir_date(self.terminal_pk, self.date)
+        self.create_playlist(self.date_path, playlist)
+        self.create_symlinks(filelist, self.date_path)
+
+    def create_symlinks(self, filelist, dst):
+        for fo in filelist:
+            self.link_to_file(fo.path_full, path.join(dst, fo.filename))
+
+    def create_playlist(self, dst, playlist):
+        pl = open(path.join(dst, 'playlist.json'), 'w+')
+        pl.write(json.dumps(playlist))
+        pl.close()
+
     def mkdir_base(self):
         if not path.exists(self.root_dir):
             mkdir(self.root_dir)
 
+    def get_terminal_path(self, tpk):
+        return path.join(self.root_dir, str(tpk))
+
+    def get_date_path(self, tpk, date):
+        return path.join(self.get_terminal_path(tpk), date)
+
     def mkdir_terminal(self, tpk):
-        if not path.exists(path.join(self.root_dir, str(tpk))):
-            mkdir(path.join(self.root_dir, str(tpk)))
+        if not path.exists(self.get_terminal_path(tpk)):
+            mkdir(self.get_terminal_path(tpk))
 
     def rmdir_terminal(self, tpk):
-        if not path.exists(path.join(self.root_dir, str(tpk))):
-            rmdir(path.join(self.root_dir, str(tpk)))
+        if path.exists(self.get_terminal_path(tpk)):
+            rmtree(self.get_terminal_path(tpk))
 
-    def mkdir_date(self, tpath, date):
-        if not path.exists(path.join(tpath, date)):
-            mkdir(path.join(path.join(tpath, date)))
+    def mkdir_date(self, tpk, date):
+        if not path.exists(self.get_date_path(tpk, date)):
+            mkdir(self.get_date_path(tpk, date))
 
-    def rmdir_date(self, tpath, date):
-        if not path.exists(path.join(tpath, date)):
-            rmdir(path.join(path.join(tpath, date)))
+    def rmdir_date(self, tpk, date):
+        if path.exists(self.get_date_path(tpk, date)):
+            rmtree(self.get_date_path(tpk, date))
+
+    def link_to_file(self, src, dst):
+        if path.exists(src):
+            symlink(src, dst)
+
+    def get_file_object(self, obj):
+        fields = {'ImageAd': 'image',
+                  'VideoAd': 'file_video'}
+
+        return getattr(obj, fields[obj.__class__.__name__])
+
+    def get_filelist(self):
+        ad_list = list(self.day.image_ad.all())+list(self.day.video_ad.all())
+        return map(self.get_file_object, ad_list)
+
+    def run(self):
+        playlist = self.get_play_list()
+        filelist = self.get_filelist()
+        self.generate_fs(filelist, playlist)

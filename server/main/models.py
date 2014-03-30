@@ -90,8 +90,8 @@ class ImageAd(AdMixin, models.Model):
     prolongation = models.TimeField('Длительность показа')
     partner = models.ForeignKey(Partner, verbose_name='Владелец объявления')
 
-    # def __unicode__(self):
-    #     return '%s: %s' % (self.partner.name, self.image.filename)
+    def __unicode__(self):
+        return '%s: %s' % (self.partner.name, self.image.filename)
 
     class Meta:
         verbose_name = 'Изображение (объявление)'
@@ -195,6 +195,11 @@ def create_update_day(sender, instance, **kwargs):
             day.save()
 
 
+# def create_playlist(sender, instance, **kwargs):
+#     pass
+
+
 m2m_changed.connect(create_update_day, sender=VideoAd.terminals.through)
 m2m_changed.connect(create_update_day, sender=TextAd.terminals.through)
 m2m_changed.connect(create_update_day, sender=ImageAd.terminals.through)
+# m2m_changed.connect(create_playlist, sender=Days.terminals.through)
