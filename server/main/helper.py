@@ -82,16 +82,21 @@ class PlaylistGenerator(object):
         """
         Base method, run generate playlist
         """
-        video_ad_list = Generator(list(self.day.video_ad.all()) + list(self.day.image_ad.all()))
-        text_ad_list = Generator(list(self.day.text_ad.all()))
+        videoal = list(self.day.video_ad.all()) + list(self.day.image_ad.all())
+        textal = list(self.day.text_ad.all())
+
+        video_ad_list = Generator(videoal)
+        text_ad_list = Generator(textal)
+
         chunk_len = self.day.video_count
         chunk_len_txt = self.day.text_count
+
         block, playlist = {}, []
 
         ctime = self.time_to_seconds(self.day.start_time)
         while ctime < self.time_to_seconds(self.day.stop_time):
-            next_chunk = video_ad_list[:chunk_len]
-            next_chunk_text = text_ad_list[:chunk_len_txt]
+            next_chunk = videoal if chunk_len == 0 else video_ad_list[:chunk_len]
+            next_chunk_text = textal if chunk_len_txt == 0 else text_ad_list[:chunk_len_txt]
 
             # next chunk duration
             nxd = self.get_chunk_duration(next_chunk)
