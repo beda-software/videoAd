@@ -6,6 +6,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    QSettings settings;
+
     ui->setupUi(this);
 
     this->bus_schedule = new QTableWidget(1, 2, this);
@@ -88,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
 
-    bool vertical = false;
+    bool vertical = settings.value("vertical",false).toBool();
     QLayout* main_layout;
     if (vertical)
     {
