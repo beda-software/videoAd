@@ -13,6 +13,7 @@ from south.modelsinspector import add_introspection_rules
 
 from ffvideo import VideoStream
 from main.fields import DateArrayField
+from main.helper import PlaylistGenerator
 
 add_introspection_rules([], ["^main\.fields\.DateArrayField"])
 
@@ -164,6 +165,9 @@ def set_duration_video(sender, instance, **kwargs):
 
 def create_update_day(sender, instance, **kwargs):
 
+    if kwargs['action'] != 'post_add':
+        return
+
     model, field = instance._meta.model, ''
 
     if model == VideoAd:
@@ -195,11 +199,20 @@ def create_update_day(sender, instance, **kwargs):
             day.save()
 
 
-# def create_playlist(sender, instance, **kwargs):
-#     pass
+def create_playlist(sender, instance, **kwargs):
+    if 'action' in kwargs and kwargs['action'] != 'post_add':
+        return
 
+    g = PlaylistGenerator(day=instance)
+    g.run()
 
+# Day update
 m2m_changed.connect(create_update_day, sender=VideoAd.terminals.through)
 m2m_changed.connect(create_update_day, sender=TextAd.terminals.through)
 m2m_changed.connect(create_update_day, sender=ImageAd.terminals.through)
-# m2m_changed.connect(create_playlist, sender=Days.terminals.through)
+
+# Create playlist and fs
+m2m_changed.connect(create_playlist, sender=Days.image_ad.through)
+m2m_changed.connect(create_playlist, sender=Days.video_ad.through)
+m2m_changed.connect(create_playlist, sender=Days.text_ad.through)
+post_save.connect(create_playlist, sender=Days)

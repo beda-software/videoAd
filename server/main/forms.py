@@ -54,7 +54,8 @@ class PgArrayWidget(forms.TextInput):
             "/static/libs/MultiDatesPicker_v1.6.1/js/jquery-1.7.2.js",
             "/static/libs/MultiDatesPicker_v1.6.1/js/jquery.ui.core.js",
             "/static/libs/MultiDatesPicker_v1.6.1/js/jquery.ui.datepicker.js",
-            "/static/libs/MultiDatesPicker_v1.6.1/jquery-ui.multidatespicker.js"
+            "/static/libs/MultiDatesPicker_v1.6.1/jquery-ui.multidatespicker.js",
+            "/static/ad_calendar.js"
         )
         css = {
             'screen': (
@@ -71,15 +72,16 @@ class PgArrayWidget(forms.TextInput):
 
         attr_id = final_attrs['id']
 
-        cdates = ''
+        # cdates = ''
+        dates = ''
 
         if value:
             final_attrs['value'] = force_text(self._format_value(value)).strip()
-            cdates = ', addDates: ["%s"]' % '","'.join(final_attrs['value'].split(','))
+            # cdates = ', addDates: ["%s"]' % '","'.join(final_attrs['value'].split(','))
+            dates = '"%s"' % '","'.join(final_attrs['value'].split(','))
 
         return mark_safe('''
-            <input%s />
-            <div style="height: 210px; width: 200px;" id="alt_%s"></div>
-            <script>
-                $('#alt_%s').multiDatesPicker({dateFormat: "yy-mm-dd"%s, altField: "%s"});
-            </script>''' % (flatatt(final_attrs), attr_id, attr_id, cdates, attr_id))
+            <div class="ad_calendar">
+                <input%s data-dates='[%s]'/>
+                <div style="height: 210px; width: 200px;" id="alt_%s"></div>
+            </div>''' % (flatatt(final_attrs), dates, attr_id))

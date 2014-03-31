@@ -1,6 +1,5 @@
 import json
 import datetime
-from main.models import VideoAd, TextAd, ImageAd
 from os import path, mkdir, symlink, unlink
 from shutil import rmtree
 from videoad import settings
@@ -45,11 +44,11 @@ class PlaylistGenerator(object):
         return map(self.get_params, ads)
 
     def get_params(self, ad):
-        if ad._meta.model == VideoAd:
+        if ad.__class__.__name__ == 'VideoAd':
             return {'video': ad.file_video.filename}
-        elif ad._meta.model == TextAd:
+        elif ad.__class__.__name__ == 'TextAd':
             return {'text': ad.text}
-        elif ad._meta.model == ImageAd:
+        elif ad.__class__.__name__ == 'ImageAd':
             return {'image': ad.image.filename}
 
     def is_immediately(self, ctime, nxd):
@@ -112,6 +111,10 @@ class PlaylistGenerator(object):
             else:
                 ctime += nxd
 
+            # Infinity loop
+            if not nxd:
+                return playlist
+
         return playlist
 
     def generate_fs(self, filelist, playlist):
@@ -160,7 +163,7 @@ class PlaylistGenerator(object):
             rmtree(self.get_date_path(tpk, date))
 
     def link_to_file(self, src, dst):
-        if path.exists(src):
+        if path.exists(src) and not path.exists(dst):
             symlink(src, dst)
 
     def get_file_object(self, obj):

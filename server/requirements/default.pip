@@ -1,7 +1,6 @@
 Django
 South
 psycopg2
-django-grappelli==2.5.2
 -e git+https://github.com/constantin3627/django-ckeditor.git@d15d9b78e5eaac2cc2eb42eaffe48f5a65a4b655#egg=django_ckeditor-master
 ffvideo
 -e git+git://github.com/jdunck/python-unicodecsv.git#egg=python-unicodecsv
@@ -9,3 +8,4 @@ Pillow==2.3.0
 django-extensions==1.3.3
 django-filebrowser==3.5.4
 -e git://github.com/jdunck/python-unicodecsv.git@13a300d82d8002e1db141540830e10f3c8dd7606#egg=unicodecsv-master
+-e git+git://github.com/sehmaschine/django-grappelli.git#egg=django-grappelli
