@@ -123,10 +123,10 @@ class Days(models.Model):
     image_ad = models.ManyToManyField(ImageAd, verbose_name='Изображение', blank=True, null=True)
     text_ad = models.ManyToManyField(TextAd, verbose_name='Тексты', blank=True, null=True)
 
-    video_count = models.PositiveIntegerField('Количество показов видео', default=0)
+    video_count = models.PositiveIntegerField('Количество показов видео', default=1)
     show_text = models.BooleanField('Показывать текст в блоке видео')
 
-    text_count = models.PositiveIntegerField('Количество показов текста', default=0)
+    text_count = models.PositiveIntegerField('Количество показов текста', default=1)
     show_video = models.BooleanField('Показывать видео в блоке текст')
 
     start_time = models.TimeField('Время начала показа', default=datetime.time(hour=8))

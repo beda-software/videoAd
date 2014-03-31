@@ -65,19 +65,16 @@ class PgArrayWidget(forms.TextInput):
 
     def render(self, name, value, attrs=None):
 
-        if value is not None:
+        if value is not None and not isinstance(value, unicode):
             value = list_to_csv(value)
 
         final_attrs = self.build_attrs(attrs, type='hidden', name=name)
 
         attr_id = final_attrs['id']
-
-        # cdates = ''
         dates = ''
 
         if value:
             final_attrs['value'] = force_text(self._format_value(value)).strip()
-            # cdates = ', addDates: ["%s"]' % '","'.join(final_attrs['value'].split(','))
             dates = '"%s"' % '","'.join(final_attrs['value'].split(','))
 
         return mark_safe('''
