@@ -160,7 +160,7 @@ void TaskManager::updatePlaylist()
     bool finded = false;
     for (int i = 0; i < DAYS_BACK_MAX; i++)
     {
-        QString dir_name = cur.toString("dd.MM.yyyy");
+        QString dir_name = cur.toString("yyyy-MM-dd");
         if (this->current_directory->cd(dir_name))
         {
             finded = true;
