@@ -1,6 +1,6 @@
 #include "taskmanager.h"
 
-TaskManager::TaskManager(MainWindow *window, QObject *parent) :
+TaskManager::TaskManager(MainWindow *window, ContentLoader *loader, QObject *parent) :
     QObject(parent)
 {
     QSettings settings;
@@ -11,6 +11,7 @@ TaskManager::TaskManager(MainWindow *window, QObject *parent) :
     this->current_played_time = QTime::currentTime();
     this->current_text_index = this->current_video_index = 0;
     this->main_window = window;
+    this->content_loader = loader;
 
     this->image_finish_timer = new QTimer();
     connect(this->image_finish_timer, SIGNAL(timeout()), this, SLOT(video_finished()));
@@ -22,10 +23,54 @@ TaskManager::TaskManager(MainWindow *window, QObject *parent) :
     this->update_timer = new QTimer();
     connect(this->update_timer, SIGNAL(timeout()), this, SLOT(update()));
     this->update_timer->start(1000);
+
+    this->load_bus_timer = new QTimer();
+    connect(this->load_bus_timer, SIGNAL(timeout()), this, SLOT(load_bus()));
+    this->load_bus_timer->start(5 * 1000);
+    this->load_bus();
+
+    this->load_news_timer = new QTimer();
+    connect(this->load_news_timer, SIGNAL(timeout()), this, SLOT(load_news()));
+    this->load_news_timer->start(10 * 60 * 1000);
+    this->load_news();
+
+    QTimer::singleShot(1000, this, SLOT(getCurrentTasks()));
 }
+
+
+void TaskManager::getCurrentTasks()
+{
+    QList<QTime> times = this->play_list.keys();
+    int minsecs = -80000;
+    QTime result;
+    foreach (QTime time, times)
+    {
+        int secs_to = this->current_played_time.secsTo(time);
+        if (minsecs < secs_to && secs_to < 0)
+        {
+            minsecs = secs_to;
+            result = time;
+        }
+    }
+
+    QList<Contents> contents = this->play_list[result];
+    this->current_played_time = result;
+    foreach (Contents content, contents)
+        if (content.type == "video")
+            this->current_videos.append(content.param);
+        else
+            this->current_texts.append(content.param);
+
+    this->text_finished();
+    this->video_finished();
+}
+
 
 void TaskManager::update()
 {
+    main_window->updateLabels(
+                this->content_loader->LoadTemperature());
+
     // не пора ли обновить текущую задачу на воспроизведение
     QTime next_task = this->getNextTaskTime();
     if (!next_task.isNull() && QTime::currentTime() > next_task)
@@ -34,7 +79,6 @@ void TaskManager::update()
 
 void TaskManager::video_finished()
 {
-    qDebug() << "finished";
     this->image_finish_timer->stop();
 
     if (this->current_videos.length() == 0)
@@ -85,9 +129,6 @@ void TaskManager::updateTasksList()
             this->current_videos.append(content.param);
         else
             this->current_texts.append(content.param);
-
-    qDebug() << this->current_videos;
-    qDebug() << this->current_texts;
 
     this->text_finished();
     this->video_finished();
@@ -167,4 +208,18 @@ void TaskManager::updatePlaylistFromFile(QString filename)
         QTime time = QTime::fromString(time_string, "hh:mm:ss");
         this->play_list[time] = contents;
     }
+}
+
+void TaskManager::load_bus()
+{
+    this->load_bus_timer->stop();
+    this->main_window->setBus(this->content_loader->LoadBus());
+    this->load_bus_timer->start();
+}
+
+void TaskManager::load_news()
+{
+    this->load_bus_timer->stop();
+    this->main_window->setNews(this->content_loader->LoadNews());
+    this->load_bus_timer->start();
 }

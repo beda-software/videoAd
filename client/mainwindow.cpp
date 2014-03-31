@@ -15,22 +15,39 @@ MainWindow::MainWindow(QWidget *parent) :
     this->bus_schedule->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     this->bus_schedule->resizeColumnsToContents();
     this->bus_schedule->resizeRowsToContents();
+    this->bus_schedule->verticalHeader()->hide();
+    this->bus_schedule->horizontalHeader()->hide();
 
-    this->news_label_temperature = new QLabel("-2C", this);
+    this->news_label_temperature = new QLabel("--------", this);
+    QFont label_font = this->news_label_temperature->font();
+    label_font.setBold(true);
+    label_font.setPointSize(30);
     this->news_label_temperature->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    this->news_label_time = new QLabel("14:88", this);
+    this->news_label_time = new QLabel("--------", this);
     this->news_label_time->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    this->news_label_temperature->setFont(label_font);
+    this->news_label_time->setFont(label_font);
+
     this->news_text = new QTextBrowser(this);
     this->news_text->setFrameStyle(QFrame::NoFrame);
     this->news_text->viewport()->setAutoFillBackground(false);
-    this->news_text->setText("i3qgoiqoiqoerhoiqerhgioqeriogqoeirghioqerhgioqrehgoqhergohqerupoghqpeourhgpuoqehpouregpu");
 
     QVBoxLayout* news_labels = new QVBoxLayout(this);
     news_labels->addWidget(this->news_label_temperature);
     news_labels->addWidget(this->news_label_time);
 
+
     this->picture_krasnoyarsk = new QGraphicsView(this);
+    QGraphicsScene *picture_scene = new QGraphicsScene(this->picture_krasnoyarsk);
+    this->picture_krasnoyarsk->setScene(picture_scene);
+
+    QPixmap pixmap = QPixmap(":/images/krasnoyarsk.jpg");
+    QGraphicsPixmapItem* item = new QGraphicsPixmapItem(pixmap.scaled(80,100));
+    picture_scene->addItem(item);
     this->picture_krasnoyarsk->setMaximumSize(80, 100);
+    this->picture_krasnoyarsk->setFrameStyle(QFrame::NoFrame);
+    this->picture_krasnoyarsk->viewport()->setAutoFillBackground(false);
+
     QHBoxLayout* news_header = new QHBoxLayout(this);
     news_header->addWidget(this->picture_krasnoyarsk);
     news_header->addSpacerItem(new QSpacerItem(this->news_text->size().width()*3, 10, QSizePolicy::Maximum));
@@ -49,6 +66,10 @@ MainWindow::MainWindow(QWidget *parent) :
     this->video_view = new QGraphicsView(this);
     QGraphicsScene* scene = new QGraphicsScene;
     this->video_view->setScene(scene);
+    this->video_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->video_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->video_view->setFrameStyle(QFrame::NoFrame);
+    this->video_view->viewport()->setAutoFillBackground(false);
 
     this->video_player = new QMediaPlayer(this);
     connect(this->video_player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(player_state_changed(QMediaPlayer::State)));
@@ -88,6 +109,8 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     ui->centralWidget->layout()->addItem(main_layout);
+
+    this->news_label_temperature->setText("");
 }
 
 void MainWindow::displayImage(QString path)
@@ -122,6 +145,7 @@ void MainWindow::displayVideo(QString path)
     this->video_view->scene()->setSceneRect(this->video_view->rect());
 
     QGraphicsVideoItem* item = new QGraphicsVideoItem;
+    item->setSize(this->video_view->size());
     this->video_player->setVideoOutput(item);
     this->video_view->scene()->addItem(item);
     this->video_view->show();
@@ -146,4 +170,41 @@ void MainWindow::player_state_changed(QMediaPlayer::State state)
 {
     if (state == QMediaPlayer::StoppedState)
         emit this->video_finished();
+}
+
+void MainWindow::setBus(QMap<int, QString> buses)
+{
+    QFont item_font = this->news_label_temperature->font();
+    item_font.setPixelSize(24);
+
+    this->bus_schedule->clear();
+
+    QList<int> keys = buses.keys();
+    this->bus_schedule->setRowCount(keys.length());
+    this->bus_schedule->setColumnCount(2);
+    for (int i = 0; i < keys.length(); i++)
+    {
+        QTableWidgetItem* bus = new QTableWidgetItem(QString("%1").arg(keys[i]));
+        bus->setFont(item_font);
+        this->bus_schedule->setItem(i, 0, bus);
+
+        QTableWidgetItem* next_time = new QTableWidgetItem(buses[keys[i]]);
+        next_time->setFont(item_font);
+        this->bus_schedule->setItem(i, 1, next_time);
+    }
+
+    this->bus_schedule->resizeRowsToContents();
+    this->bus_schedule->resizeColumnsToContents();
+}
+
+
+void MainWindow::updateLabels(QString temperature)
+{
+    this->news_label_temperature->setText(temperature);
+    this->news_label_time->setText(QTime::currentTime().toString("hh:mm"));
+}
+
+void MainWindow::setNews(QString news_text){
+    this->news_text->setText(news_text);
+    this->news_text->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }

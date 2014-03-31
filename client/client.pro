@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 
-QT       += core widgets multimedia multimediawidgets
+QT       += core widgets multimedia multimediawidgets xml network
 
 TARGET = client
 TEMPLATE = app
@@ -21,4 +21,7 @@ HEADERS  += mainwindow.h \
     taskmanager.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    resources.qrc
 

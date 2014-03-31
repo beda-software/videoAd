@@ -17,6 +17,7 @@
 #include <QDebug>
 
 #include "mainwindow.h"
+#include "contentloader.h"
 
 
 #define IMAGE_DURATION 10
@@ -35,7 +36,7 @@ class TaskManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit TaskManager(MainWindow* window, QObject *parent = 0);
+    explicit TaskManager(MainWindow* window, ContentLoader* loader, QObject *parent = 0);
     
 signals:
     
@@ -44,6 +45,13 @@ public slots:
 
     void video_finished();
     void text_finished();
+
+    void load_bus();
+    void load_news();
+
+private slots:
+    void getCurrentTasks();
+
 
 private:
     void updatePlaylist();
@@ -67,6 +75,11 @@ private:
     QTimer* text_finish_timer;
     QTimer* update_timer;
     MainWindow* main_window;
+
+
+    ContentLoader* content_loader;
+    QTimer* load_bus_timer;
+    QTimer* load_news_timer;
 };
 
 #endif // TASKMANAGER_H

@@ -13,6 +13,7 @@
 #include <QGraphicsView>
 #include <QGraphicsVideoItem>
 #include <QGraphicsPixmapItem>
+#include <QTime>
 
 
 namespace Ui {
@@ -28,6 +29,11 @@ public:
     void displayNextAdvicement(QString text);
     void displayVideo(QString path);
     void displayImage(QString path);
+
+    void setBus(QMap<int, QString> buses);
+    void setNews(QString news_text);
+
+    void updateLabels(QString temperature);
 
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
