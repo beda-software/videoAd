@@ -21,9 +21,12 @@ class MainWindow;
 
 class MainWindow : public QMainWindow
 {
+
     Q_OBJECT
     
 public:
+    enum DisplayMode{ TEXT=1, VIDEO=2, ALL=3 };
+    void SetDisplayMode(MainWindow::DisplayMode);
     void stopAll();
     void displayNextAdvicement(QString text);
     void displayVideo(QString path);
@@ -42,6 +45,7 @@ signals:
 
 private slots:
     void player_state_changed(QMediaPlayer::State);
+
     
 private:
     void displayImage(QGraphicsView* view, QString path);
@@ -58,6 +62,8 @@ private:
 
     int current_advicement_index;
     QList<QTextBrowser*> text_advicements;
+    QLabel* advicement_label;
+    int current_advicement_size;
 
     QGraphicsView* picture_krasnoyarsk;
 };

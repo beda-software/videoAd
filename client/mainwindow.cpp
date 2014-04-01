@@ -62,9 +62,9 @@ MainWindow::MainWindow(QWidget *parent) :
     this->video_player = new QMediaPlayer(this);
     connect(this->video_player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(player_state_changed(QMediaPlayer::State)));
 
-    QLabel *temp = new QLabel(this);
+    this->advicement_label = new QLabel(this);
 
-    int advicements_count = 3;
+    int advicements_count = 7;
     this->current_advicement_index = 0;
     for (int i = 0; i < advicements_count; i++)
     {
@@ -76,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
         advicement->setFont(font);
         advicement->setMaximumHeight(50);
         this->text_advicements.append(advicement);
+        advicement->hide();
     }
 
     bool vertical = settings.value("vertical", false).toBool();
@@ -108,18 +109,7 @@ MainWindow::MainWindow(QWidget *parent) :
         this->news_text->move(2541/scale, 1353/scale);
 //        news_text->setStyleSheet("QTextBrowser { background-color:#FFFFFF}");
 
-        this->video_view->setFixedSize(6340/scale, 3454/scale);
-        this->video_view->move(4730/scale, 0/scale);
 
-        temp->setStyleSheet("QLabel { background-color:#D9D9D9}");
-        temp->setFixedSize(6428/scale, 2805/scale);
-        temp->move(4740/scale, 3465/scale);
-
-        int start_y_pos = 3817;
-        for (int i=0; i<this->text_advicements.size(); i++) {
-            this->text_advicements[i]->setFixedSize(5336/scale, 592/scale);
-            this->text_advicements[i]->move(5192/scale, start_y_pos/scale + i*726/scale);
-        }
     }
 
     this->news_label_temperature->setText("");
@@ -169,7 +159,7 @@ void MainWindow::displayVideo(QString path)
 void MainWindow::displayNextAdvicement(QString text)
 {
     this->text_advicements[this->current_advicement_index]->setText(text);
-    this->current_advicement_index = (this->current_advicement_index + 1) % this->text_advicements.length();
+    this->current_advicement_index = (this->current_advicement_index + 1) % this->current_advicement_size;
 }
 
 
@@ -230,4 +220,47 @@ void MainWindow::setNews(QString news_text){
     this->news_text->setText("<h1 align=\"center\">НОВОСТИ</h1>" + news_text);
     this->news_text->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->news_text->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+}
+
+
+void MainWindow::SetDisplayMode(MainWindow::DisplayMode mode){
+    QSettings settings;
+    int scale = settings.value("scale", 10).toInt();
+
+    if(mode == MainWindow::ALL){
+            this->current_advicement_size = 3;
+            this->video_view->show();
+            this->video_view->setFixedSize(6340/scale, 3454/scale);
+            this->video_view->move(4730/scale, 0/scale);
+
+            this->advicement_label->setStyleSheet("QLabel { background-color:#D9D9D9}");
+            this->advicement_label->setFixedSize(6428/scale, 2805/scale);
+            this->advicement_label->move(4740/scale, 3465/scale);
+
+            int start_y_pos = 3817;
+            for (int i=0; i<this->current_advicement_size; i++) {
+                this->text_advicements[i]->setFixedSize(5336/scale, 592/scale);
+                this->text_advicements[i]->move(5192/scale, start_y_pos/scale + i*726/scale);
+                this->text_advicements[i]->show();
+            }
+            for (int i=this->current_advicement_size;i<this->text_advicements.size(); i++)
+                this->text_advicements[i]->hide();
+
+    }
+    if(mode == MainWindow::TEXT){
+        this->current_advicement_size = 7;
+        this->video_view->hide();
+
+        this->advicement_label->setStyleSheet("QLabel { background-color:#D9D9D9}");
+        this->advicement_label->setFixedSize(6428/scale, 6244/scale);
+        this->advicement_label->move(4740/scale, 0/scale);
+
+        int start_y_pos = 726/scale;
+        for (int i=0; i<this->text_advicements.size(); i++) {
+            this->text_advicements[i]->show();
+            this->text_advicements[i]->setFixedSize(5336/scale, 592/scale);
+            this->text_advicements[i]->move(5192/scale, start_y_pos + i*726/scale);
+            this->text_advicements[i]->show();
+        }
+    }
 }
