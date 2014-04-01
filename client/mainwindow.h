@@ -15,7 +15,6 @@
 #include <QGraphicsPixmapItem>
 #include <QTime>
 
-
 namespace Ui {
 class MainWindow;
 }
@@ -47,17 +46,11 @@ private slots:
 private:
     void displayImage(QGraphicsView* view, QString path);
 
-
-
-    Ui::MainWindow *ui;
-
     QTableWidget* bus_schedule;
 
     QLabel* news_label_time;
     QLabel* news_label_temperature;
     QTextBrowser* news_text;
-    QVBoxLayout* news_box;
-    QHBoxLayout* news_with_bus_schedule;
 
     QGraphicsView* video_view;
     QMediaPlayer* video_player;
@@ -65,12 +58,8 @@ private:
 
     int current_advicement_index;
     QList<QTextBrowser*> text_advicements;
-    QVBoxLayout* text_box;
 
     QGraphicsView* picture_krasnoyarsk;
-
-
-
 };
 
 #endif // MAINWINDOW_H

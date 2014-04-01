@@ -14,11 +14,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     contentloader.cpp \
-    taskmanager.cpp
+    taskmanager.cpp \
+    tableitemdelegate.cpp
 
 HEADERS  += mainwindow.h \
     contentloader.h \
-    taskmanager.h
+    taskmanager.h \
+    tableitemdelegate.h
 
 FORMS    += mainwindow.ui
 
