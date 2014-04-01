@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     QSettings settings;
 
-    int scale =  settings.value("scale", 10).toInt();
+    int scale = settings.value("scale", 10).toInt();
 
     this->bus_schedule = new QTableWidget(1, 2, this);
     this->bus_schedule->horizontalHeader()->sectionResizeMode(QHeaderView::Fixed);
@@ -69,8 +69,11 @@ MainWindow::MainWindow(QWidget *parent) :
     for (int i = 0; i < advicements_count; i++)
     {
         QTextBrowser* advicement = new QTextBrowser(this);
-        advicement->setFixedSize(5336/10, 592/10);
+        advicement->setFixedSize(5336/scale, 592/scale);
         advicement->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        QFont font = advicement->font();
+        font.setPointSize(100/scale);
+        advicement->setFont(font);
         advicement->setMaximumHeight(50);
         this->text_advicements.append(advicement);
     }
