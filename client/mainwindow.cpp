@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     QSettings settings;
 
-    int scale = 10;
+    int scale =  settings.value("scale", 10).toInt();
 
     this->bus_schedule = new QTableWidget(1, 2, this);
     this->bus_schedule->horizontalHeader()->sectionResizeMode(QHeaderView::Fixed);
@@ -45,9 +45,9 @@ MainWindow::MainWindow(QWidget *parent) :
     this->picture_krasnoyarsk->setScene(picture_scene);
 
     QPixmap pixmap = QPixmap(":/images/krasnoyarsk.jpg");
-    QGraphicsPixmapItem* item = new QGraphicsPixmapItem(pixmap.scaled(80,100));
+    QGraphicsPixmapItem* item = new QGraphicsPixmapItem(pixmap.scaled(800/scale,1000/scale));
     picture_scene->addItem(item);
-    this->picture_krasnoyarsk->setMaximumSize(80, 100);
+    this->picture_krasnoyarsk->setMaximumSize(800/scale, 1000/scale);
     this->picture_krasnoyarsk->setFrameStyle(QFrame::NoFrame);
     this->picture_krasnoyarsk->viewport()->setAutoFillBackground(false);
 
