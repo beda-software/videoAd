@@ -62,9 +62,9 @@ void TaskManager::getCurrentTasks()
             this->current_texts.append(content.param);
 
     if (this->current_videos.size())
-        this->main_window->SetDisplayMode(MainWindow::ALL);
+        this->main_window->setDisplayMode(MainWindow::ALL);
     else
-        this->main_window->SetDisplayMode(MainWindow::TEXT);
+        this->main_window->setDisplayMode(MainWindow::TEXT);
 
     this->text_finished();
     this->video_finished();
@@ -136,9 +136,9 @@ void TaskManager::updateTasksList()
             this->current_texts.append(content.param);
 
     if (this->current_videos.size())
-        this->main_window->SetDisplayMode(MainWindow::ALL);
+        this->main_window->setDisplayMode(MainWindow::ALL);
     else
-        this->main_window->SetDisplayMode(MainWindow::TEXT);
+        this->main_window->setDisplayMode(MainWindow::TEXT);
 
     this->text_finished();
     this->video_finished();

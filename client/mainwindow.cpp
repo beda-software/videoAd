@@ -83,13 +83,33 @@ MainWindow::MainWindow(QWidget *parent) :
     //this->showFullScreen();
     if (vertical)
     {
+        this->setFixedSize(6244/scale, 10969/scale);
+        this->bus_schedule->move(64/scale, 64/scale);
+        this->bus_schedule->setFixedSize(2000/scale, 4760/scale);
+        this->bus_schedule->setColumnWidth(0, 900/scale); // 1090 x 324
+        this->bus_schedule->setColumnWidth(1, 1100/scale); // 1364 x 324
+        this->bus_schedule->setRowCount(14);
+
+        this->picture_krasnoyarsk->setFixedSize(800/scale, 1000/scale);
+        this->picture_krasnoyarsk->move(2300/scale, 120/scale);
+
+        this->news_label_temperature->setFixedSize(1100/scale, 473/scale);
+        this->news_label_temperature->move(4440/scale, 120/scale);
+//        news_label_temperature->setStyleSheet("QLabel { background-color:#FFFFFF}");
+
+        this->news_label_time->setFixedSize(1330/scale, 450/scale);
+        this->news_label_time->move(4440/scale, 592/scale);
+//        news_label_time->setStyleSheet("QLabel { background-color:#FFFFFF}");
+
+        this->news_text->setFixedSize(3900/scale, 3500/scale);
+        this->news_text->move(2200/scale, 1200/scale);
+//        news_text->setStyleSheet("QTextBrowser { background-color:#FFFFFF}");
     }
     else // horizontal
     {
         this->setFixedSize(10969/scale, 6244/scale);
-        this->move(32/scale, 32/scale);
-        this->bus_schedule->setFixedWidth((1090+1364)/scale);
-        this->bus_schedule->setFixedHeight(6244/scale);
+        this->bus_schedule->move(64/scale, 64/scale);
+        this->bus_schedule->setFixedSize((1090+1364)/scale, 6120/scale);
         this->bus_schedule->setColumnWidth(0, 1090/scale); // 1090 x 324
         this->bus_schedule->setColumnWidth(1, 1364/scale); // 1364 x 324
         this->bus_schedule->setRowCount(20);
@@ -106,7 +126,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //        news_label_time->setStyleSheet("QLabel { background-color:#FFFFFF}");
 
         this->news_text->setFixedSize(2200/scale, 4700/scale);
-        this->news_text->move(2541/scale, 1353/scale);
+        this->news_text->move(2650/scale, 1353/scale);
 //        news_text->setStyleSheet("QTextBrowser { background-color:#FFFFFF}");
 
 
@@ -223,19 +243,59 @@ void MainWindow::setNews(QString news_text){
 }
 
 
-void MainWindow::SetDisplayMode(MainWindow::DisplayMode mode){
+void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
     QSettings settings;
     int scale = settings.value("scale", 10).toInt();
+    bool vertical = settings.value("vertical", false).toBool();
 
-    if(mode == MainWindow::ALL){
+    if (vertical) {
+        if(mode == MainWindow::ALL) {
             this->current_advicement_size = 3;
             this->video_view->show();
-            this->video_view->setFixedSize(6340/scale, 3454/scale);
+            this->video_view->setFixedSize(6244/scale, 3450/scale);
+            this->video_view->move(0/scale, 4850/scale);
+
+            this->advicement_label->setStyleSheet("QLabel { background-color:#D9D9D9}");
+            this->advicement_label->setFixedSize(6244/scale, 2700/scale);
+            this->advicement_label->move(0/scale, 8300/scale);
+
+            int start_y_pos = 8660;
+            for (int i=0; i<this->current_advicement_size; i++) {
+                this->text_advicements[i]->setFixedSize(5320/scale, 592/scale);
+                this->text_advicements[i]->move(420/scale, start_y_pos/scale + i*700/scale);
+                this->text_advicements[i]->show();
+            }
+            for (int i=this->current_advicement_size;i<this->text_advicements.size(); i++)
+                this->text_advicements[i]->hide();
+
+        }
+        if(mode == MainWindow::TEXT){
+            this->current_advicement_size = 7;
+            this->video_view->hide();
+
+            this->advicement_label->setStyleSheet("QLabel { background-color:#D9D9D9}");
+            this->advicement_label->setFixedSize(6244/scale, 6150/scale);
+            this->advicement_label->move(0/scale, 4850/scale);
+
+            int start_y_pos = 5400/scale;
+            for (int i=0; i<this->text_advicements.size(); i++) {
+                this->text_advicements[i]->show();
+                this->text_advicements[i]->setFixedSize(5320/scale, 592/scale);
+                this->text_advicements[i]->move(420/scale, start_y_pos + i*726/scale);
+                this->text_advicements[i]->show();
+            }
+        }
+    }
+    else {
+        if(mode == MainWindow::ALL) {
+            this->current_advicement_size = 3;
+            this->video_view->show();
+            this->video_view->setFixedSize(6428/scale, 3454/scale);
             this->video_view->move(4730/scale, 0/scale);
 
             this->advicement_label->setStyleSheet("QLabel { background-color:#D9D9D9}");
             this->advicement_label->setFixedSize(6428/scale, 2805/scale);
-            this->advicement_label->move(4740/scale, 3465/scale);
+            this->advicement_label->move(4870/scale, 3455/scale);
 
             int start_y_pos = 3817;
             for (int i=0; i<this->current_advicement_size; i++) {
@@ -246,21 +306,23 @@ void MainWindow::SetDisplayMode(MainWindow::DisplayMode mode){
             for (int i=this->current_advicement_size;i<this->text_advicements.size(); i++)
                 this->text_advicements[i]->hide();
 
-    }
-    if(mode == MainWindow::TEXT){
-        this->current_advicement_size = 7;
-        this->video_view->hide();
+        }
+        if(mode == MainWindow::TEXT){
+            this->current_advicement_size = 7;
+            this->video_view->hide();
 
-        this->advicement_label->setStyleSheet("QLabel { background-color:#D9D9D9}");
-        this->advicement_label->setFixedSize(6428/scale, 6244/scale);
-        this->advicement_label->move(4740/scale, 0/scale);
+            this->advicement_label->setStyleSheet("QLabel { background-color:#D9D9D9}");
+            this->advicement_label->setFixedSize(6428/scale, 6244/scale);
+            this->advicement_label->move(4870/scale, 0/scale);
 
-        int start_y_pos = 726/scale;
-        for (int i=0; i<this->text_advicements.size(); i++) {
-            this->text_advicements[i]->show();
-            this->text_advicements[i]->setFixedSize(5336/scale, 592/scale);
-            this->text_advicements[i]->move(5192/scale, start_y_pos + i*726/scale);
-            this->text_advicements[i]->show();
+            int start_y_pos = 726/scale;
+            for (int i=0; i<this->text_advicements.size(); i++) {
+                this->text_advicements[i]->show();
+                this->text_advicements[i]->setFixedSize(5336/scale, 592/scale);
+                this->text_advicements[i]->move(5192/scale, start_y_pos + i*726/scale);
+                this->text_advicements[i]->show();
+            }
         }
     }
+
 }

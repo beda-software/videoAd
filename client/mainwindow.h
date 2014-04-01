@@ -26,7 +26,7 @@ class MainWindow : public QMainWindow
     
 public:
     enum DisplayMode{ TEXT=1, VIDEO=2, ALL=3 };
-    void SetDisplayMode(MainWindow::DisplayMode);
+    void setDisplayMode(MainWindow::DisplayMode);
     void stopAll();
     void displayNextAdvicement(QString text);
     void displayVideo(QString path);
