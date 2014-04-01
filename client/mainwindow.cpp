@@ -85,6 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
         this->setFixedSize(10969/scale, 6244/scale);
         this->move(32/scale, 32/scale);
         this->bus_schedule->setFixedWidth((1090+1364)/scale);
+        this->bus_schedule->setFixedHeight(6244/scale);
         this->bus_schedule->setColumnWidth(0, 1090/scale); // 1090 x 324
         this->bus_schedule->setColumnWidth(1, 1364/scale); // 1364 x 324
         this->bus_schedule->setRowCount(20);
