@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->bus_schedule->setStyleSheet(""\
                                       "QTableWidget{" \
                                         "gridline-color:black;"\
-                                        "background-color:#EDEDED;"\
+                                        "background-color:#DCDAD5;"\
                                       "}");
     this->bus_schedule->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->bus_schedule->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
