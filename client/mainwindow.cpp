@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QTime now_t = QTime::currentTime();
     QTime on_t = QTime::fromString(settings.value("start_work_time", "08:00:00").toString(),
                                    "hh:mm:ss");
-    QTime off_t = QTime::fromString(settings.value("stot_work_time", "22:00:00").toString(),
+    QTime off_t = QTime::fromString(settings.value("stot_work_time", "23:59:00").toString(),
                                     "hh:mm:ss");
 
 
@@ -103,7 +103,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         bool vertical = settings.value("vertical", false).toBool();
         this->showFullScreen();
-        if (vertical)
+        if (1 == 1)
         {
             this->setFixedSize(6244/scale, 10969/scale);
 
@@ -169,7 +169,7 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::off() {
-    QTime now_t = QTime::fromString(QTime::currentTime().toString("hh:mm:ss"), "hh:mm:ss");
+    QTime now_t = QTime::currentTime();
     QTime off_t = QTime::fromString(QString("22:00:00"), "hh:mm:ss");
     QTime on_t = QTime::fromString(QString("08:00:00"), "hh:mm:ss");
 
@@ -236,11 +236,11 @@ void MainWindow::player_state_changed(QMediaPlayer::State state)
         emit this->video_finished();
 }
 
-void MainWindow::setBus(QMap<int, QString> buses)
+void MainWindow::setBus(QMap<QString, int> buses)
 {
     this->bus_schedule->clear();
 
-    QList<int> keys = buses.keys();
+    QList<QString> keys = buses.keys();
     int count_item_in_bus_schedule = this->bus_schedule->rowCount();
 
     QSettings settings;
@@ -265,11 +265,11 @@ void MainWindow::setBus(QMap<int, QString> buses)
     {
         font.setPointSize(350/(int)scale);
         font.setBold(true);
-        TableItemDelegate* bus = new TableItemDelegate(QString("%1").arg(keys[i]), 0, font);
+        TableItemDelegate* bus = new TableItemDelegate(QString("%1").arg(buses[keys[i]]), 0, font);
         this->bus_schedule->setItem(i+1, 0, bus);
 
         font.setPointSize(250/(int)scale);
-        QTime t = QTime::fromString(buses[keys[i]], "hh:mm:ss"); // убрал секунды
+        QTime t = QTime::fromString(keys[i], "hh:mm:ss"); // убрал секунды
         TableItemDelegate* next_time = new TableItemDelegate(QString(t.toString("hh:mm")), 1, font);
         this->bus_schedule->setItem(i+1, 1, next_time);
     }
@@ -298,7 +298,7 @@ void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
     int scale = settings.value("scale", 10).toInt();
     bool vertical = settings.value("vertical", false).toBool();
 
-    if (vertical) {
+    if (1 == 1) {
         if(mode == MainWindow::ALL) {
             this->current_advicement_size = 3;
             this->video_view->show();
@@ -315,6 +315,9 @@ void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
                 this->text_advicements[i]->setFixedSize(5320/scale, 592/scale);
                 this->text_advicements[i]->move(540/scale, start_y_pos + i*700/scale);
                 this->text_advicements[i]->show();
+                QFont font = this->text_advicements[i]->font();
+                font.setPointSize(40);
+                this->text_advicements[i]->setFont(font);
             }
             for (int i=this->current_advicement_size;i<this->text_advicements.size(); i++)
                 this->text_advicements[i]->hide();
@@ -335,7 +338,7 @@ void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
                 font.setPointSize(40);
                 this->text_advicements[i]->setFont(font);
                 this->text_advicements[i]->setFixedSize(5320/scale, 592/scale);
-                this->text_advicements[i]->move(420/scale, start_y_pos + i*726/scale);
+                this->text_advicements[i]->move(540/scale, start_y_pos + i*700/scale);
                 this->text_advicements[i]->show();
             }
         }

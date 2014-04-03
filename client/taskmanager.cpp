@@ -37,11 +37,6 @@ TaskManager::TaskManager(MainWindow *window, ContentLoader *loader, QObject *par
     QTimer::singleShot(1000, this, SLOT(getCurrentTasks()));
 }
 
-void TaskManager::off() {
-    image_finish_timer->stop();
-    disconnect(this->image_finish_timer, SIGNAL(timeout()));
-}
-
 void TaskManager::getCurrentTasks()
 {
     QList<QTime> times = this->play_list.keys();

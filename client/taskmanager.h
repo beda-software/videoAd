@@ -49,8 +49,6 @@ public slots:
     void load_bus();
     void load_news();
 
-    void off();
-
 private slots:
     void getCurrentTasks();
 
@@ -61,7 +59,6 @@ private:
     void updatePlaylistFromFile(QString filename);
 
     QTime getNextTaskTime();
-
 
     int current_video_index;
     QStringList current_videos;

@@ -35,7 +35,7 @@ public:
     void displayVideo(QString path);
     void displayImage(QString path);
 
-    void setBus(QMap<int, QString> buses);
+    void setBus(QMap<QString, int> buses);
     void setNews(QString news_text);
 
     void updateLabels(QString temperature);
