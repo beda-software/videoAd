@@ -1,0 +1,15 @@
+*sublime*
+*.swp
+__pycache__
+*.pyc
+*.ropeproject*
+*.o
+Makefile
+moc_*.cpp
+ui_*.h
+qrc_*
+*.pro.user*
+local.py
+build-*
+client
+server/media/
