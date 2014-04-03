@@ -20,8 +20,8 @@
 #include "contentloader.h"
 
 
-#define IMAGE_DURATION 10
-#define TEXT_DURATION 10
+#define IMAGE_DURATION 30
+#define TEXT_DURATION 8
 #define DAYS_BACK_MAX 5
 
 

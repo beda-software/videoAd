@@ -55,7 +55,7 @@ void TaskManager::getCurrentTasks()
     QList<Contents> contents = this->play_list[result];
     this->current_played_time = result;
     foreach (Contents content, contents)
-        if (content.type == "video")
+        if (content.type == "video" || content.type == "image" )
             this->current_videos.append(content.param);
         else
             this->current_texts.append(content.param);
@@ -129,7 +129,7 @@ void TaskManager::updateTasksList()
     QList<Contents> contents = this->play_list[next_task];
     this->current_played_time = next_task;
     foreach (Contents content, contents)
-        if (content.type == "video")
+        if (content.type == "video" || content.type == "image" )
             this->current_videos.append(content.param);
         else
             this->current_texts.append(content.param);
