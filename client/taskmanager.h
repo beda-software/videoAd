@@ -49,6 +49,8 @@ public slots:
     void load_bus();
     void load_news();
 
+    void off();
+
 private slots:
     void getCurrentTasks();
 
