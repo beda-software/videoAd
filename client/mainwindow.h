@@ -54,7 +54,6 @@ private slots:
     
 private:
     void displayImage(QGraphicsView* view, QString path);
-    bool off_flag;
     ContentLoader* loader;
     TaskManager* task_manager ;
 

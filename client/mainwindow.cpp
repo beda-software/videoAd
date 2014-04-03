@@ -12,24 +12,15 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
     QSettings settings;
-    this->off_flag = false;
 
-    QTime now_t = QTime::fromString(QTime::currentTime().toString("hh:mm:ss"), "hh:mm:ss");
-    QTime off_t = QTime::fromString(QString("22:00:00"), "hh:mm:ss");
-    QTime on_t = QTime::fromString(QString("08:00:00"), "hh:mm:ss");
+    QTime now_t = QTime::currentTime();
+    QTime on_t = QTime::fromString(settings.value("start_work_time", "08:00:00").toString(),
+                                   "hh:mm:ss");
+    QTime off_t = QTime::fromString(settings.value("stot_work_time", "22:00:00").toString(),
+                                    "hh:mm:ss");
+
 
     if (now_t > off_t || now_t < on_t) {
-
-        /*QWidget *w = new QWidget;
-        w->setStyleSheet(""\
-                         "QMainWindow {"
-                             "background: black;"\
-                         "}");
-        QSettings settings;
-        float scale = settings.value("scale", 10.0).toFloat();
-        w->setFixedSize(800, 600);
-        w->show();
-        //w->showFullScreen();*/
         this->setStyleSheet(""\
                             "QMainWindow {"
                                 "background: black;"\
