@@ -1,142 +1,190 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "tableitemdelegate.h"
+#include "taskmanager.h"
+#include "contentloader.h"
+
 #include <QDebug>
+#include <QTimer>
+#include <QApplication>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
     QSettings settings;
+    this->off_flag = false;
 
-    int scale = settings.value("scale", 10).toInt();
+    QTime now_t = QTime::fromString(QTime::currentTime().toString("hh:mm:ss"), "hh:mm:ss");
+    QTime off_t = QTime::fromString(QString("22:00:00"), "hh:mm:ss");
+    QTime on_t = QTime::fromString(QString("08:00:00"), "hh:mm:ss");
 
-    this->bus_schedule = new QTableWidget(1, 2, this);
-    this->bus_schedule->horizontalHeader()->sectionResizeMode(QHeaderView::Fixed);
-    this->bus_schedule->setFrameStyle(QFrame::NoFrame);
-    this->bus_schedule->setStyleSheet(""\
-                                      "QTableWidget{" \
-                                        "gridline-color:black;"\
-                                      "}");
-    this->bus_schedule->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    this->bus_schedule->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    this->bus_schedule->verticalHeader()->hide();
-    this->bus_schedule->horizontalHeader()->hide();
+    if (now_t > off_t || now_t < on_t) {
 
-    this->news_label_temperature = new QLabel("--------", this);
-    QFont label_font = this->news_label_temperature->font();
-    label_font.setBold(true);
-    label_font.setPointSize(30);
-    this->news_label_temperature->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    this->news_label_temperature->setFont(label_font);
-
-    this->news_label_time = new QLabel("--------", this);
-    this->news_label_time->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    this->news_label_time->setFont(label_font);
-
-    this->news_text = new QTextBrowser(this);
-    this->news_text->setFrameStyle(QFrame::NoFrame);
-    this->news_text->viewport()->setAutoFillBackground(false);
-
-    this->picture_krasnoyarsk = new QGraphicsView(this);
-    this->picture_krasnoyarsk->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    this->picture_krasnoyarsk->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    QGraphicsScene *picture_scene = new QGraphicsScene(this->picture_krasnoyarsk);
-    this->picture_krasnoyarsk->setScene(picture_scene);
-
-    QPixmap pixmap = QPixmap(":/images/krasnoyarsk.jpg");
-    QGraphicsPixmapItem* item = new QGraphicsPixmapItem(pixmap.scaled(800/scale,1000/scale));
-    picture_scene->addItem(item);
-    this->picture_krasnoyarsk->setMaximumSize(800/scale, 1000/scale);
-    this->picture_krasnoyarsk->setFrameStyle(QFrame::NoFrame);
-    this->picture_krasnoyarsk->viewport()->setAutoFillBackground(false);
-
-    this->video_view = new QGraphicsView(this);
-    QGraphicsScene* scene = new QGraphicsScene;
-    this->video_view->setScene(scene);
-    this->video_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    this->video_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    this->video_view->setFrameStyle(QFrame::NoFrame);
-    this->video_view->viewport()->setAutoFillBackground(false);
-
-    this->video_player = new QMediaPlayer(this);
-    connect(this->video_player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(player_state_changed(QMediaPlayer::State)));
-
-    this->advicement_label = new QLabel(this);
-
-    int advicements_count = 7;
-    this->current_advicement_index = 0;
-    for (int i = 0; i < advicements_count; i++)
-    {
-        QTextBrowser* advicement = new QTextBrowser(this);
-        advicement->setFixedSize(5336/scale, 592/scale);
-        advicement->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-        QFont font = advicement->font();
-        font.setPointSize(100/scale);
-        advicement->setFont(font);
-        advicement->setMaximumHeight(50);
-        this->text_advicements.append(advicement);
-        advicement->hide();
+        /*QWidget *w = new QWidget;
+        w->setStyleSheet(""\
+                         "QMainWindow {"
+                             "background: black;"\
+                         "}");
+        QSettings settings;
+        float scale = settings.value("scale", 10.0).toFloat();
+        w->setFixedSize(800, 600);
+        w->show();
+        //w->showFullScreen();*/
+        this->setStyleSheet(""\
+                            "QMainWindow {"
+                                "background: black;"\
+                            "}");
     }
+    else {
 
-    bool vertical = settings.value("vertical", false).toBool();
-    //this->showFullScreen();
-    if (vertical)
-    {
-        this->setFixedSize(6244/scale, 10969/scale);
+        float scale = settings.value("scale", 10.0).toFloat();
 
-        this->bus_schedule->move(64/scale, 120/scale);
-        this->bus_schedule->setFixedSize(2000/scale, 4000/scale);
-        this->bus_schedule->verticalHeader()->setDefaultSectionSize(400/scale);
-        this->bus_schedule->setColumnWidth(0, 900/scale); // 1090 x 324
-        this->bus_schedule->setColumnWidth(1, 1100/scale); // 1364 x 324
-        this->bus_schedule->setRowCount(10);
+        this->bus_schedule = new QTableWidget(1, 2, this);
+        this->bus_schedule->horizontalHeader()->sectionResizeMode(QHeaderView::Fixed);
+        this->bus_schedule->setFrameStyle(QFrame::NoFrame);
+        this->bus_schedule->setStyleSheet(""\
+                                          "QTableWidget{" \
+                                            "gridline-color:black;"\
+                                          "}");
+        this->bus_schedule->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->bus_schedule->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->bus_schedule->verticalHeader()->hide();
+        this->bus_schedule->horizontalHeader()->hide();
 
-        this->picture_krasnoyarsk->setFixedSize(800/scale, 1000/scale);
-        this->picture_krasnoyarsk->move(2300/scale, 120/scale);
+        this->news_label_temperature = new QLabel("--------", this);
+        QFont label_font = this->news_label_temperature->font();
+        label_font.setBold(true);
+        label_font.setPointSize(600/(int)scale);
+        this->news_label_temperature->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        this->news_label_temperature->setFont(label_font);
 
-        this->news_label_temperature->setFixedSize(1100/scale, 473/scale);
-        this->news_label_temperature->move(4440/scale, 120/scale);
-//        news_label_temperature->setStyleSheet("QLabel { background-color:#FFFFFF}");
+        this->news_label_time = new QLabel("--------", this);
+        this->news_label_time->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        this->news_label_time->setFont(label_font);
 
-        this->news_label_time->setFixedSize(1330/scale, 450/scale);
-        this->news_label_time->move(4440/scale, 592/scale);
-//        news_label_time->setStyleSheet("QLabel { background-color:#FFFFFF}");
+        this->news_text = new QTextBrowser(this);
+        this->news_text->setFrameStyle(QFrame::NoFrame);
+        this->news_text->viewport()->setAutoFillBackground(false);
+        QFont f = this->news_text->font();
+        f.setPointSize(150/(int)scale);
+        this->news_text->setFont(f);
 
-        this->news_text->setFixedSize(3900/scale, 3500/scale);
-        this->news_text->move(2200/scale, 1200/scale);
-//        news_text->setStyleSheet("QTextBrowser { background-color:#FFFFFF}");
+        this->picture_krasnoyarsk = new QGraphicsView(this);
+        this->picture_krasnoyarsk->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->picture_krasnoyarsk->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        QGraphicsScene *picture_scene = new QGraphicsScene(this->picture_krasnoyarsk);
+        this->picture_krasnoyarsk->setScene(picture_scene);
+
+        QPixmap pixmap = QPixmap(":/images/krasnoyarsk.jpg");
+        QGraphicsPixmapItem* item = new QGraphicsPixmapItem(pixmap.scaled(800/scale,1000/scale));
+        picture_scene->addItem(item);
+        this->picture_krasnoyarsk->setMaximumSize(800/scale, 1000/scale);
+        this->picture_krasnoyarsk->setFrameStyle(QFrame::NoFrame);
+        this->picture_krasnoyarsk->viewport()->setAutoFillBackground(false);
+
+        this->video_view = new QGraphicsView(this);
+        QGraphicsScene* scene = new QGraphicsScene;
+        this->video_view->setScene(scene);
+        this->video_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->video_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->video_view->setFrameStyle(QFrame::NoFrame);
+        this->video_view->viewport()->setAutoFillBackground(false);
+
+        this->video_player = new QMediaPlayer(this);
+        connect(this->video_player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(player_state_changed(QMediaPlayer::State)));
+
+        this->advicement_label = new QLabel(this);
+
+        int advicements_count = 7;
+        this->current_advicement_index = 0;
+        for (int i = 0; i < advicements_count; i++)
+        {
+            QTextBrowser* advicement = new QTextBrowser(this);
+            advicement->setFixedSize(5336/scale, 592/scale);
+            advicement->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+            QFont font = advicement->font();
+            font.setPointSize(180/scale);
+            advicement->setFont(font);
+            advicement->setMaximumHeight(50);
+            this->text_advicements.append(advicement);
+            advicement->hide();
+        }
+
+        bool vertical = settings.value("vertical", false).toBool();
+        this->showFullScreen();
+        if (vertical)
+        {
+            this->setFixedSize(6244/scale, 10969/scale);
+
+            this->bus_schedule->move(64/scale, 64/scale);
+            this->bus_schedule->setFixedSize(2000/scale, 4356/scale);
+            this->bus_schedule->verticalHeader()->setDefaultSectionSize(400/scale);
+            this->bus_schedule->setColumnWidth(0, 900/scale);
+            this->bus_schedule->setColumnWidth(1, 1100/scale);
+            this->bus_schedule->setRowCount(10);
+
+            this->picture_krasnoyarsk->setFixedSize(800/scale, 1000/scale);
+            this->picture_krasnoyarsk->move(2300/scale, 64/scale);
+
+            this->news_label_temperature->setFixedSize(1800/scale, 473/scale);
+            this->news_label_temperature->move(4400/scale, 64/scale);
+    //        news_label_temperature->setStyleSheet("QLabel { background-color:#FFFFFF}");
+
+            this->news_label_time->setFixedSize(1800/scale, 473/scale);
+            this->news_label_time->move(4400/scale, 570/scale);
+    //        news_label_time->setStyleSheet("QLabel { background-color:#FFFFFF}");
+
+            this->news_text->setFixedSize(3900/scale, 3480/scale);
+            this->news_text->move(2200/scale, 1200/scale);
+    //        news_text->setStyleSheet("QTextBrowser { background-color:#FFFFFF}");
+        }
+        else // horizontal
+        {
+            this->setFixedSize(10969/scale, 6244/scale);
+
+            this->bus_schedule->move(64/scale, 64/scale);
+    //        this->bus_schedule->setFixedSize((1090+1364)/scale, 6120/scale);
+            this->bus_schedule->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+            this->bus_schedule->setColumnWidth(0, 1090/scale);
+            this->bus_schedule->setColumnWidth(1, 1364/scale);
+            this->bus_schedule->verticalHeader()->setDefaultSectionSize(400/scale);
+            this->bus_schedule->setRowCount(10);
+
+            this->picture_krasnoyarsk->setFixedSize(800/scale, 1000/scale);
+            this->picture_krasnoyarsk->move(2640/scale, 116/scale);
+
+            this->news_label_temperature->setFixedSize(1100/scale, 473/scale);
+            this->news_label_temperature->move(3440/scale, 116/scale);
+    //        news_label_temperature->setStyleSheet("QLabel { background-color:#FFFFFF}");
+
+            this->news_label_time->setFixedSize(1330/scale, 450/scale);
+            this->news_label_time->move(3440/scale, 592/scale);
+    //        news_label_time->setStyleSheet("QLabel { background-color:#FFFFFF}");
+
+            this->news_text->setFixedSize(2200/scale, 4700/scale);
+            this->news_text->move(2650/scale, 1353/scale);
+    //        news_text->setStyleSheet("QTextBrowser { background-color:#FFFFFF}");
+        }
+
+        this->news_label_temperature->setText("");
+
+        this->loader = new ContentLoader();
+        this->task_manager = new TaskManager(this, loader);
     }
-    else // horizontal
-    {
-        this->setFixedSize(10969/scale, 6244/scale);
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(off()));
+    timer->start(1000);
 
-        this->bus_schedule->move(64/scale, 64/scale);
-//        this->bus_schedule->setFixedSize((1090+1364)/scale, 6120/scale);
-        this->bus_schedule->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-        this->bus_schedule->setColumnWidth(0, 1090/scale);
-        this->bus_schedule->setColumnWidth(1, 1364/scale);
-        this->bus_schedule->verticalHeader()->setDefaultSectionSize(400/scale);
-        this->bus_schedule->setRowCount(10);
+}
 
-        this->picture_krasnoyarsk->setFixedSize(800/scale, 1000/scale);
-        this->picture_krasnoyarsk->move(2640/scale, 116/scale);
+void MainWindow::off() {
+    QTime now_t = QTime::fromString(QTime::currentTime().toString("hh:mm:ss"), "hh:mm:ss");
+    QTime off_t = QTime::fromString(QString("22:00:00"), "hh:mm:ss");
+    QTime on_t = QTime::fromString(QString("08:00:00"), "hh:mm:ss");
 
-        this->news_label_temperature->setFixedSize(1100/scale, 473/scale);
-        this->news_label_temperature->move(3440/scale, 116/scale);
-//        news_label_temperature->setStyleSheet("QLabel { background-color:#FFFFFF}");
-
-        this->news_label_time->setFixedSize(1330/scale, 450/scale);
-        this->news_label_time->move(3440/scale, 592/scale);
-//        news_label_time->setStyleSheet("QLabel { background-color:#FFFFFF}");
-
-        this->news_text->setFixedSize(2200/scale, 4700/scale);
-        this->news_text->move(2650/scale, 1353/scale);
-//        news_text->setStyleSheet("QTextBrowser { background-color:#FFFFFF}");
-
-
-    }
-
-    this->news_label_temperature->setText("");
+    qDebug() << now_t.toString() << "-----" << on_t.toString();
+    if (now_t == on_t || now_t == off_t)
+        qApp->exit();
 }
 
 void MainWindow::displayImage(QString path)
@@ -182,7 +230,7 @@ void MainWindow::displayVideo(QString path)
 
 void MainWindow::displayNextAdvicement(QString text)
 {
-    this->text_advicements[this->current_advicement_index]->setText(text);
+    this->text_advicements[this->current_advicement_index]->setText(text.replace("\n", " "));
     this->current_advicement_index = (this->current_advicement_index + 1) % this->current_advicement_size;
 }
 
@@ -203,10 +251,15 @@ void MainWindow::setBus(QMap<int, QString> buses)
 
     QList<int> keys = buses.keys();
     int count_item_in_bus_schedule = this->bus_schedule->rowCount();
+
+    QSettings settings;
+    float scale = settings.value("scale", 10.0).toFloat();
     QFont font = this->news_label_temperature->font();
 
     // хедеры вставил в нулевые строки, дабы не иметь проблем со стилями,
     // автобусы вставляются с первой ячейки
+    font.setPointSize(160/(int)scale);
+    font.setBold(false);
     TableItemDelegate* h_item = new TableItemDelegate(QString("Маршрут"), 0, font);
     this->bus_schedule->setItem(0, 0, h_item);
 
@@ -219,15 +272,18 @@ void MainWindow::setBus(QMap<int, QString> buses)
 
     for (int i = 0; i < count_item_in_bus_schedule; i++)
     {
+        font.setPointSize(350/(int)scale);
+        font.setBold(true);
         TableItemDelegate* bus = new TableItemDelegate(QString("%1").arg(keys[i]), 0, font);
         this->bus_schedule->setItem(i+1, 0, bus);
 
+        font.setPointSize(250/(int)scale);
         QTime t = QTime::fromString(buses[keys[i]], "hh:mm:ss"); // убрал секунды
-        TableItemDelegate* next_time = new TableItemDelegate(QString("в " + t.toString("hh:mm")),
-                                                             1, font);
+        TableItemDelegate* next_time = new TableItemDelegate(QString(t.toString("hh:mm")), 1, font);
         this->bus_schedule->setItem(i+1, 1, next_time);
     }
 }
+
 
 
 void MainWindow::updateLabels(QString temperature)
@@ -255,17 +311,18 @@ void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
         if(mode == MainWindow::ALL) {
             this->current_advicement_size = 3;
             this->video_view->show();
-            this->video_view->setFixedSize(6244/scale, 3450/scale);
+            this->video_view->setFixedSize(6544/scale, 4000/scale);
             this->video_view->move(0/scale, 4850/scale);
 
+            /*
             this->advicement_label->setStyleSheet("QLabel { background-color:#D9D9D9}");
-            this->advicement_label->setFixedSize(6244/scale, 2700/scale);
-            this->advicement_label->move(0/scale, 8300/scale);
+            this->advicement_label->setFixedSize(4244/scale, 2500/scale);
+            this->advicement_label->move(0/scale, 8500/scale);*/
 
-            int start_y_pos = 8660;
+            int start_y_pos = 9060/scale;
             for (int i=0; i<this->current_advicement_size; i++) {
                 this->text_advicements[i]->setFixedSize(5320/scale, 592/scale);
-                this->text_advicements[i]->move(420/scale, start_y_pos/scale + i*700/scale);
+                this->text_advicements[i]->move(540/scale, start_y_pos + i*700/scale);
                 this->text_advicements[i]->show();
             }
             for (int i=this->current_advicement_size;i<this->text_advicements.size(); i++)
@@ -283,6 +340,9 @@ void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
             int start_y_pos = 5400/scale;
             for (int i=0; i<this->text_advicements.size(); i++) {
                 this->text_advicements[i]->show();
+                QFont font = this->text_advicements[i]->font();
+                font.setPointSize(40);
+                this->text_advicements[i]->setFont(font);
                 this->text_advicements[i]->setFixedSize(5320/scale, 592/scale);
                 this->text_advicements[i]->move(420/scale, start_y_pos + i*726/scale);
                 this->text_advicements[i]->show();

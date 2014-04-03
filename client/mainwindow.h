@@ -15,6 +15,9 @@
 #include <QGraphicsPixmapItem>
 #include <QTime>
 
+class ContentLoader;
+class TaskManager;
+
 namespace Ui {
 class MainWindow;
 }
@@ -46,9 +49,14 @@ signals:
 private slots:
     void player_state_changed(QMediaPlayer::State);
 
+    void off();
+
     
 private:
     void displayImage(QGraphicsView* view, QString path);
+    bool off_flag;
+    ContentLoader* loader;
+    TaskManager* task_manager ;
 
     QTableWidget* bus_schedule;
 

@@ -37,6 +37,10 @@ TaskManager::TaskManager(MainWindow *window, ContentLoader *loader, QObject *par
     QTimer::singleShot(1000, this, SLOT(getCurrentTasks()));
 }
 
+void TaskManager::off() {
+    image_finish_timer->stop();
+    disconnect(this->image_finish_timer, SIGNAL(timeout()));
+}
 
 void TaskManager::getCurrentTasks()
 {
@@ -56,7 +60,7 @@ void TaskManager::getCurrentTasks()
     QList<Contents> contents = this->play_list[result];
     this->current_played_time = result;
     foreach (Contents content, contents)
-        if (content.type == "video" || content.type == "image" )
+        if (content.type == "video")
             this->current_videos.append(content.param);
         else
             this->current_texts.append(content.param);
@@ -130,7 +134,7 @@ void TaskManager::updateTasksList()
     QList<Contents> contents = this->play_list[next_task];
     this->current_played_time = next_task;
     foreach (Contents content, contents)
-        if (content.type == "video" || content.type == "image" )
+        if (content.type == "video")
             this->current_videos.append(content.param);
         else
             this->current_texts.append(content.param);

@@ -20,8 +20,8 @@
 #include "contentloader.h"
 
 
-#define IMAGE_DURATION 30
-#define TEXT_DURATION 8
+#define IMAGE_DURATION 10
+#define TEXT_DURATION 10
 #define DAYS_BACK_MAX 5
 
 
@@ -48,6 +48,8 @@ public slots:
 
     void load_bus();
     void load_news();
+
+    void off();
 
 private slots:
     void getCurrentTasks();
