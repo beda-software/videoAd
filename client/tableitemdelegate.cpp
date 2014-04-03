@@ -4,6 +4,7 @@ TableItemDelegate::TableItemDelegate(QString text, int column, QFont font)
 {
     QTableWidgetItem::setData(Qt::DisplayRole, text);
     QTableWidgetItem::setTextAlignment(Qt::AlignCenter);
+    QTableWidgetItem::setSizeHint(QSize(110, 40));
 
     if (column == 0) {
         font.setPixelSize(22);

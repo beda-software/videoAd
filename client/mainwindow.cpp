@@ -16,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->bus_schedule->setStyleSheet(""\
                                       "QTableWidget{" \
                                         "gridline-color:black;"\
-                                        "background-color:#DCDAD5;"\
                                       "}");
     this->bus_schedule->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->bus_schedule->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -84,11 +83,13 @@ MainWindow::MainWindow(QWidget *parent) :
     if (vertical)
     {
         this->setFixedSize(6244/scale, 10969/scale);
-        this->bus_schedule->move(64/scale, 64/scale);
-        this->bus_schedule->setFixedSize(2000/scale, 4760/scale);
+
+        this->bus_schedule->move(64/scale, 120/scale);
+        this->bus_schedule->setFixedSize(2000/scale, 4000/scale);
+        this->bus_schedule->verticalHeader()->setDefaultSectionSize(400/scale);
         this->bus_schedule->setColumnWidth(0, 900/scale); // 1090 x 324
         this->bus_schedule->setColumnWidth(1, 1100/scale); // 1364 x 324
-        this->bus_schedule->setRowCount(14);
+        this->bus_schedule->setRowCount(10);
 
         this->picture_krasnoyarsk->setFixedSize(800/scale, 1000/scale);
         this->picture_krasnoyarsk->move(2300/scale, 120/scale);
@@ -108,11 +109,14 @@ MainWindow::MainWindow(QWidget *parent) :
     else // horizontal
     {
         this->setFixedSize(10969/scale, 6244/scale);
+
         this->bus_schedule->move(64/scale, 64/scale);
-        this->bus_schedule->setFixedSize((1090+1364)/scale, 6120/scale);
-        this->bus_schedule->setColumnWidth(0, 1090/scale); // 1090 x 324
-        this->bus_schedule->setColumnWidth(1, 1364/scale); // 1364 x 324
-        this->bus_schedule->setRowCount(20);
+//        this->bus_schedule->setFixedSize((1090+1364)/scale, 6120/scale);
+        this->bus_schedule->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+        this->bus_schedule->setColumnWidth(0, 1090/scale);
+        this->bus_schedule->setColumnWidth(1, 1364/scale);
+        this->bus_schedule->verticalHeader()->setDefaultSectionSize(400/scale);
+        this->bus_schedule->setRowCount(10);
 
         this->picture_krasnoyarsk->setFixedSize(800/scale, 1000/scale);
         this->picture_krasnoyarsk->move(2640/scale, 116/scale);
@@ -223,7 +227,6 @@ void MainWindow::setBus(QMap<int, QString> buses)
                                                              1, font);
         this->bus_schedule->setItem(i+1, 1, next_time);
     }
-    this->bus_schedule->resizeRowsToContents();
 }
 
 
