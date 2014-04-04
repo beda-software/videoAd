@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QTime now_t = QTime::currentTime();
     QTime on_t = QTime::fromString(settings.value("start_work_time", "08:00:00").toString(),
                                    "hh:mm:ss");
-    QTime off_t = QTime::fromString(settings.value("stot_work_time", "04:59:00").toString(),
+    QTime off_t = QTime::fromString(settings.value("stot_work_time", "22:00:00").toString(),
                                     "hh:mm:ss");
 
 
@@ -169,14 +169,18 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(off()));
-    timer->start(1000);
+    timer->start(60*1000);
 
 }
 
-void MainWindow::off() {
+void MainWindow::off() {    
+    QSettings settings;
+
     QTime now_t = QTime::currentTime();
-    QTime off_t = QTime::fromString(QString("22:00:00"), "hh:mm:ss");
-    QTime on_t = QTime::fromString(QString("08:00:00"), "hh:mm:ss");
+    QTime on_t = QTime::fromString(settings.value("start_work_time", "08:00:00").toString(),
+                                   "hh:mm:ss");
+    QTime off_t = QTime::fromString(settings.value("stot_work_time", "22:00:00").toString(),
+                                    "hh:mm:ss");
 
     qDebug() << now_t.toString() << "-----" << on_t.toString();
     if (now_t == on_t || now_t == off_t)
@@ -192,9 +196,6 @@ void MainWindow::stopAll()
 {
     if (this->video_player)
         this->video_player->stop();
-
-//    if (this->video_view->scene())
-//        this->video_view->scene()->clear();
 }
 
 void MainWindow::displayImage(QGraphicsView *view, QString path)
