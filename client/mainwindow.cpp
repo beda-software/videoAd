@@ -16,15 +16,19 @@ MainWindow::MainWindow(QWidget *parent) :
     QTime now_t = QTime::currentTime();
     QTime on_t = QTime::fromString(settings.value("start_work_time", "08:00:00").toString(),
                                    "hh:mm:ss");
-    QTime off_t = QTime::fromString(settings.value("stot_work_time", "23:59:00").toString(),
+    QTime off_t = QTime::fromString(settings.value("stot_work_time", "04:59:00").toString(),
                                     "hh:mm:ss");
 
 
-    if (now_t > off_t || now_t < on_t) {
-        this->setStyleSheet(""\
-                            "QMainWindow {"
-                                "background: black;"\
-                            "}");
+    if (now_t > off_t && now_t < on_t) {
+        float scale = settings.value("scale", 10.0).toFloat();
+        bool vertical = settings.value("vertical", true).toBool();
+        this->showFullScreen();
+        if (vertical)
+        {
+            this->setFixedSize(6244/scale, 10969/scale);
+        }
+        this->setStyleSheet("QMainWindow {\"background: black;}");
     }
     else {
 
@@ -36,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
         this->bus_schedule->setStyleSheet(""\
                                           "QTableWidget{" \
                                             "gridline-color:black;"\
+                                            "background-color:#DCDAD5;"\
                                           "}");
         this->bus_schedule->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         this->bus_schedule->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -101,9 +106,9 @@ MainWindow::MainWindow(QWidget *parent) :
             advicement->hide();
         }
 
-        bool vertical = settings.value("vertical", false).toBool();
+        bool vertical = settings.value("vertical", true).toBool();
         this->showFullScreen();
-        if (1 == 1)
+        if (vertical)
         {
             this->setFixedSize(6244/scale, 10969/scale);
 
@@ -112,7 +117,7 @@ MainWindow::MainWindow(QWidget *parent) :
             this->bus_schedule->verticalHeader()->setDefaultSectionSize(400/scale);
             this->bus_schedule->setColumnWidth(0, 900/scale);
             this->bus_schedule->setColumnWidth(1, 1100/scale);
-            this->bus_schedule->setRowCount(10);
+            this->bus_schedule->setRowCount(11);
 
             this->picture_krasnoyarsk->setFixedSize(800/scale, 1000/scale);
             this->picture_krasnoyarsk->move(2300/scale, 64/scale);
@@ -238,9 +243,10 @@ void MainWindow::player_state_changed(QMediaPlayer::State state)
 
 void MainWindow::setBus(QMap<QString, int> buses)
 {
-    this->bus_schedule->clear();
-
     QList<QString> keys = buses.keys();
+    if (keys.size() < 1)
+        return;
+
     int count_item_in_bus_schedule = this->bus_schedule->rowCount();
 
     QSettings settings;
@@ -273,6 +279,7 @@ void MainWindow::setBus(QMap<QString, int> buses)
         TableItemDelegate* next_time = new TableItemDelegate(QString(t.toString("hh:mm")), 1, font);
         this->bus_schedule->setItem(i+1, 1, next_time);
     }
+    this->bus_schedule->sortByColumn(1, Qt::AscendingOrder);
 }
 
 
@@ -296,9 +303,9 @@ void MainWindow::setNews(QString news_text){
 void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
     QSettings settings;
     int scale = settings.value("scale", 10).toInt();
-    bool vertical = settings.value("vertical", false).toBool();
+    bool vertical = settings.value("vertical", true).toBool();
 
-    if (1 == 1) {
+    if (vertical) {
         if(mode == MainWindow::ALL) {
             this->current_advicement_size = 3;
             this->video_view->show();
