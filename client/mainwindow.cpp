@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QTime now_t = QTime::currentTime();
     QTime on_t = QTime::fromString(settings.value("start_work_time", "08:00:00").toString(),
                                    "hh:mm:ss");
-    QTime off_t = QTime::fromString(settings.value("stot_work_time", "22:00:00").toString(),
+    QTime off_t = QTime::fromString(settings.value("stop_work_time", "22:00:00").toString(),
                                     "hh:mm:ss");
 
 
@@ -177,12 +177,13 @@ void MainWindow::off() {
     QSettings settings;
 
     QTime now_t = QTime::currentTime();
+    now_t = QTime(now_t.hour(), now_t.minute()); // strip seconds
     QTime on_t = QTime::fromString(settings.value("start_work_time", "08:00:00").toString(),
                                    "hh:mm:ss");
-    QTime off_t = QTime::fromString(settings.value("stot_work_time", "22:00:00").toString(),
+    QTime off_t = QTime::fromString(settings.value("stop_work_time", "22:00:00").toString(),
                                     "hh:mm:ss");
 
-    qDebug() << now_t.toString() << "-----" << on_t.toString();
+    qDebug() << now_t.toString() << "-----" << on_t.toString() << "---" << off_t.toString();
     if (now_t == on_t || now_t == off_t)
         qApp->exit();
 }
