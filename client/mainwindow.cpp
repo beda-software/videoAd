@@ -11,23 +11,11 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
-    QSettings settings;
-
-    QTime now_t = QTime::currentTime();
-    QTime on_t = QTime::fromString(settings.value("start_work_time", "08:00:00").toString(),
-                                   "hh:mm:ss");
-    QTime off_t = QTime::fromString(settings.value("stop_work_time", "22:00:00").toString(),
-                                    "hh:mm:ss");
-
-
-    if (now_t > off_t && now_t < on_t) {
+    if (this->isNight() == MainWindow::NIGHT) {
         float scale = settings.value("scale", 10.0).toFloat();
         bool vertical = settings.value("vertical", true).toBool();
         this->showFullScreen();
-        if (vertical)
-        {
-            this->setFixedSize(6244/scale, 10969/scale);
-        }
+        if (vertical) this->setFixedSize(6244/scale, 10969/scale);
         this->setStyleSheet("QMainWindow {\"background: black;}");
     }
     else {
@@ -50,19 +38,19 @@ MainWindow::MainWindow(QWidget *parent) :
         this->news_label_temperature = new QLabel("--------", this);
         QFont label_font = this->news_label_temperature->font();
         label_font.setBold(true);
-        label_font.setPointSize(600/(int)scale);
-        this->news_label_temperature->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        label_font.setPointSize((int)600/scale); // TODO setPixelSize
+        this->news_label_temperature->setAlignment(Qt::AlignCenter);
         this->news_label_temperature->setFont(label_font);
 
         this->news_label_time = new QLabel("--------", this);
-        this->news_label_time->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        this->news_label_time->setAlignment(Qt::AlignCenter);
         this->news_label_time->setFont(label_font);
 
         this->news_text = new QTextBrowser(this);
         this->news_text->setFrameStyle(QFrame::NoFrame);
         this->news_text->viewport()->setAutoFillBackground(false);
         QFont f = this->news_text->font();
-        f.setPointSize(150/(int)scale);
+        f.setPointSize((int)150/scale);
         this->news_text->setFont(f);
 
         this->picture_krasnoyarsk = new QGraphicsView(this);
@@ -97,11 +85,9 @@ MainWindow::MainWindow(QWidget *parent) :
         {
             QTextBrowser* advicement = new QTextBrowser(this);
             advicement->setFixedSize(5336/scale, 592/scale);
-            advicement->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
             QFont font = advicement->font();
-            font.setPointSize(180/scale);
+            font.setPointSize((int)180/scale);
             advicement->setFont(font);
-            advicement->setMaximumHeight(50);
             this->text_advicements.append(advicement);
             advicement->hide();
         }
@@ -140,7 +126,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
             this->bus_schedule->move(64/scale, 64/scale);
     //        this->bus_schedule->setFixedSize((1090+1364)/scale, 6120/scale);
-            this->bus_schedule->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
             this->bus_schedule->setColumnWidth(0, 1090/scale);
             this->bus_schedule->setColumnWidth(1, 1364/scale);
             this->bus_schedule->verticalHeader()->setDefaultSectionSize(400/scale);
@@ -173,18 +158,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
-void MainWindow::off() {    
-    QSettings settings;
-
+int MainWindow::isNight() {
     QTime now_t = QTime::currentTime();
-    now_t = QTime(now_t.hour(), now_t.minute()); // strip seconds
     QTime on_t = QTime::fromString(settings.value("start_work_time", "08:00:00").toString(),
                                    "hh:mm:ss");
     QTime off_t = QTime::fromString(settings.value("stop_work_time", "22:00:00").toString(),
                                     "hh:mm:ss");
-
-    qDebug() << now_t.toString() << "-----" << on_t.toString() << "---" << off_t.toString();
     if (now_t == on_t || now_t == off_t)
+        return MainWindow::OFF; // выключение
+
+    else if (now_t > off_t && now_t < on_t)
+        return MainWindow::NIGHT; // черный экран
+
+    return MainWindow::DAY;
+}
+
+void MainWindow::off() {    
+    if (this->isNight() == MainWindow::OFF)
         qApp->exit();
 }
 
@@ -323,10 +313,12 @@ void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
             for (int i=0; i<this->current_advicement_size; i++) {
                 this->text_advicements[i]->setFixedSize(5320/scale, 592/scale);
                 this->text_advicements[i]->move(540/scale, start_y_pos + i*700/scale);
-                this->text_advicements[i]->show();
+                this->text_advicements[i]->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                this->text_advicements[i]->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 QFont font = this->text_advicements[i]->font();
-                font.setPointSize(40);
+                font.setPointSize(400/scale);
                 this->text_advicements[i]->setFont(font);
+                this->text_advicements[i]->show();
             }
             for (int i=this->current_advicement_size;i<this->text_advicements.size(); i++)
                 this->text_advicements[i]->hide();
@@ -336,15 +328,16 @@ void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
             this->current_advicement_size = 7;
             this->video_view->hide();
 
-            this->advicement_label->setStyleSheet("QLabel { background-color:#D9D9D9}");
+            /*this->advicement_label->setStyleSheet("QLabel { background-color:#D9D9D9}");
             this->advicement_label->setFixedSize(6244/scale, 6150/scale);
-            this->advicement_label->move(0/scale, 4850/scale);
+            this->advicement_label->move(0/scale, 4850/scale);*/
 
             int start_y_pos = 5400/scale;
             for (int i=0; i<this->text_advicements.size(); i++) {
-                this->text_advicements[i]->show();
+                this->text_advicements[i]->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                this->text_advicements[i]->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 QFont font = this->text_advicements[i]->font();
-                font.setPointSize(40);
+                font.setPointSize(400/scale);
                 this->text_advicements[i]->setFont(font);
                 this->text_advicements[i]->setFixedSize(5320/scale, 592/scale);
                 this->text_advicements[i]->move(540/scale, start_y_pos + i*700/scale);

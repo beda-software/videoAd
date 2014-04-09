@@ -29,6 +29,8 @@ class MainWindow : public QMainWindow
     
 public:
     enum DisplayMode{ TEXT=1, VIDEO=2, ALL=3 };
+    enum ShowMode {DAY=1, NIGHT=2, OFF=3};
+
     void setDisplayMode(MainWindow::DisplayMode);
     void stopAll();
     void displayNextAdvicement(QString text);
@@ -53,7 +55,10 @@ private slots:
 
     
 private:
+    int isNight();
     void displayImage(QGraphicsView* view, QString path);
+
+    QSettings settings;
     ContentLoader* loader;
     TaskManager* task_manager ;
 
