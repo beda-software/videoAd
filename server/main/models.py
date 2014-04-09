@@ -1,19 +1,24 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import datetime
+import shlex
+import subprocess
 
 from django.db import models
 from django.dispatch import receiver
 from django.utils.html import strip_tags
+from filebrowser.base import FileObject
 from filebrowser.fields import FileBrowseField
 from django.db.models.signals import pre_save, post_save, m2m_changed
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from south.modelsinspector import add_introspection_rules
+from tasks import create_playlist_task, compress_video_task
 
 from ffvideo import VideoStream
 from main.fields import DateArrayField
 from main.helper import PlaylistGenerator
+from os import path
 
 add_introspection_rules([], ["^main\.fields\.DateArrayField"])
 
@@ -65,6 +70,10 @@ class Partner(models.Model):
     passport = models.TextField('Паспортные данные с пропиской', blank=True, null=True)
 
     def __unicode__(self):
+        return self.base_name
+
+    @property
+    def base_name(self):
         return self.name or self.short_name or self.full_name
 
     class Meta:
@@ -78,7 +87,7 @@ class VideoAd(AdMixin, models.Model):
     prolongation = models.TimeField('Длительность видео', blank=True, null=True)
 
     def __unicode__(self):
-        return '%s: %s' % (self.partner.name, self.file_video)
+        return '%s: %s' % (self.partner.base_name, self.file_video.filename)
 
     class Meta:
         verbose_name = 'Видео (объявление)'
@@ -92,7 +101,7 @@ class ImageAd(AdMixin, models.Model):
     partner = models.ForeignKey(Partner, verbose_name='Владелец объявления')
 
     def __unicode__(self):
-        return '%s: %s' % (self.partner.name, self.image.filename)
+        return '%s: %s' % (self.partner.base_name, self.image.filename)
 
     class Meta:
         verbose_name = 'Изображение (объявление)'
@@ -104,7 +113,7 @@ class TextAd(AdMixin, models.Model):
     partner = models.ForeignKey(Partner, verbose_name='Владелец объявления')
 
     def __unicode__(self):
-        return '%s: %s' % (self.partner.name, strip_tags(self.text))
+        return '%s: %s' % (self.partner.base_name, strip_tags(self.text))
 
     class Meta:
         verbose_name = 'Текст (объявление)'
@@ -155,6 +164,21 @@ class ImmediatelyAd(models.Model):
         verbose_name_plural = 'Рекламы'
 
 
+class OsCommandLog(models.Model):
+    command = models.TextField('Текст комманды')
+    ouput = models.TextField('STDOUT')
+    errors = models.TextField('STDERR')
+    return_code = models.CharField('Код выполнения', max_length=255)
+    datetime = models.DateTimeField('Дата выполнения', auto_now=True)
+
+    def __unicode__(self):
+        return self.command
+
+    class Meta:
+        verbose_name = 'Лог выполнения комманд'
+        verbose_name_plural = 'Логи выполнения комманд'
+
+
 @receiver(pre_save, sender=VideoAd)
 def set_duration_video(sender, instance, **kwargs):
     if instance.file_video:
@@ -172,6 +196,11 @@ def create_update_day(sender, instance, **kwargs):
 
     if model == VideoAd:
         field = 'video_ad'
+
+        # test to compress
+        if not '_compress' in instance.file_video.filename:
+            return
+
     elif model == TextAd:
         field = 'text_ad'
     elif model == ImageAd:
@@ -203,8 +232,12 @@ def create_playlist(sender, instance, **kwargs):
     if 'action' in kwargs and kwargs['action'] != 'post_add':
         return
 
-    g = PlaylistGenerator(day=instance)
-    g.run()
+    create_playlist_task.delay(day=instance)
+
+
+def compress_video(sender, instance, **kwargs):
+    compress_video_task.delay(video=instance)
+
 
 # Day update
 m2m_changed.connect(create_update_day, sender=VideoAd.terminals.through)
@@ -216,3 +249,6 @@ m2m_changed.connect(create_playlist, sender=Days.image_ad.through)
 m2m_changed.connect(create_playlist, sender=Days.video_ad.through)
 m2m_changed.connect(create_playlist, sender=Days.text_ad.through)
 post_save.connect(create_playlist, sender=Days)
+
+# Compress video signal
+post_save.connect(compress_video, sender=VideoAd)

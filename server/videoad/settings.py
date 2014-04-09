@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-# Global settings for videoad project.
-
+from __future__ import absolute_import
 from os.path import abspath, dirname, basename, join, split
+
+# Global settings for videoad project.
 
 MAIN_APPS_PATH = abspath(dirname(__file__))
 MAIN_APPS_NAME = basename(MAIN_APPS_PATH)
@@ -43,6 +44,18 @@ MEDIA_URL = '/media/'
 STATICFILES_DIRS = ()
 TEMPLATE_DIRS = ()
 
+BROKER_URL = "amqp://lkot:mqpassword@localhost:5672/mqhost"
+
+CELERY_ACCEPT_CONTENT = ['json']
+
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_TIMEZONE = 'Europe/Madrid'
+
+CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
+CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
 FILEBROWSER_MAX_UPLOAD_SIZE = 2147483648
 
 STATICFILES_FINDERS = (
@@ -81,7 +94,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
 )
 
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -90,6 +102,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'djcelery',
     'south',
     'grappelli',
     'filebrowser',
@@ -135,4 +148,4 @@ for item in LOCAL_APPS:
     TEMPLATE_DIRS+=(join(PROJECT_PATH, item,'templates'),)
     STATICFILES_DIRS+=((item,join(PROJECT_PATH, item,'static')),)
 
-from local import *
+from videoad.local import *

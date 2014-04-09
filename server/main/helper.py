@@ -1,5 +1,10 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import json
 import datetime
+import shlex
+import subprocess
+from multiprocessing import ProcessError
 from os import path, mkdir, symlink, unlink
 from shutil import rmtree
 from videoad import settings

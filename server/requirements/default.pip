@@ -1,5 +1,6 @@
 Django
 South
+django-celery
 psycopg2
 -e git+https://github.com/constantin3627/django-ckeditor.git@d15d9b78e5eaac2cc2eb42eaffe48f5a65a4b655#egg=django_ckeditor-master
 ffvideo

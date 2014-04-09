@@ -5,6 +5,7 @@ from django.contrib import admin
 from main.models import Partner, ImageAd, VideoAd, TextAd, Days, Terminal, ImmediatelyAd
 from main.forms import PgArrayWidget
 from main.forms import SelectWidget
+from main.models import OsCommandLog
 
 __author__ = 'lkot'
 
@@ -98,6 +99,6 @@ class DaysAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Partner, PartnerAdmin)
-admin.site.register([ImageAd, Terminal, TextAd], DefaultAdmin)
+admin.site.register([ImageAd, Terminal, TextAd, OsCommandLog], DefaultAdmin)
 admin.site.register(VideoAd, VideoAdmin)
 admin.site.register(Days, DaysAdmin)
