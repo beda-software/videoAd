@@ -11,7 +11,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
-    if (this->isNight() == MainWindow::NIGHT) {
+    if (this->isNight() == MainWindow::NIGHT || this->isNight() == MainWindow::OFF) {
         float scale = settings.value("scale", 10.0).toFloat();
         bool vertical = settings.value("vertical", true).toBool();
         this->showFullScreen();
@@ -165,7 +165,9 @@ int MainWindow::isNight() {
                                    "hh:mm:ss");
     QTime off_t = QTime::fromString(settings.value("stop_work_time", "22:00:00").toString(),
                                     "hh:mm:ss");
-    if (now_t == on_t || now_t == off_t)
+    if (now_t == on_t)
+        return MainWindow::ON; // выключение
+    if(now_t == off_t)
         return MainWindow::OFF; // выключение
 
     else if (now_t >= off_t || now_t < on_t)
@@ -175,7 +177,7 @@ int MainWindow::isNight() {
 }
 
 void MainWindow::off() {    
-    if (this->isNight() == MainWindow::OFF)
+    if (this->isNight() == MainWindow::OFF || this->isNight() == MainWindow::ON)
         qApp->exit();
 }
 

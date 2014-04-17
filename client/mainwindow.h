@@ -29,7 +29,7 @@ class MainWindow : public QMainWindow
     
 public:
     enum DisplayMode{ TEXT=1, VIDEO=2, ALL=3 };
-    enum ShowMode {DAY=1, NIGHT=2, OFF=3};
+    enum ShowMode {DAY, NIGHT, OFF, ON};
 
     void setDisplayMode(MainWindow::DisplayMode);
     void stopAll();
