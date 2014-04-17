@@ -168,7 +168,7 @@ int MainWindow::isNight() {
     if (now_t == on_t || now_t == off_t)
         return MainWindow::OFF; // выключение
 
-    else if (now_t >= off_t || now_t <= on_t)
+    else if (now_t >= off_t || now_t < on_t)
         return MainWindow::NIGHT; // черный экран
 
     return MainWindow::DAY;
