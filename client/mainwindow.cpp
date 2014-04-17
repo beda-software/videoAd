@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
         bool vertical = settings.value("vertical", true).toBool();
         this->showFullScreen();
         if (vertical) this->setFixedSize(6244/scale, 10969/scale);
-        this->setStyleSheet("QMainWindow {\"background: black;}");
+        this->setStyleSheet("QMainWindow {background: black;}");
     }
     else {
 
@@ -160,6 +160,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 int MainWindow::isNight() {
     QTime now_t = QTime::currentTime();
+    now_t = QTime(now_t.hour(), now_t.minute()); // strip seconds
     QTime on_t = QTime::fromString(settings.value("start_work_time", "08:00:00").toString(),
                                    "hh:mm:ss");
     QTime off_t = QTime::fromString(settings.value("stop_work_time", "22:00:00").toString(),
@@ -167,7 +168,7 @@ int MainWindow::isNight() {
     if (now_t == on_t || now_t == off_t)
         return MainWindow::OFF; // выключение
 
-    else if (now_t > off_t && now_t < on_t)
+    else if (now_t > off_t || now_t < on_t)
         return MainWindow::NIGHT; // черный экран
 
     return MainWindow::DAY;
