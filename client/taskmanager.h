@@ -22,7 +22,7 @@
 
 #define IMAGE_DURATION 30
 #define TEXT_DURATION 8
-#define DAYS_BACK_MAX 5
+#define DAYS_BACK_MAX 30
 
 
 struct Contents

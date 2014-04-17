@@ -261,6 +261,8 @@ void MainWindow::setBus(QMap<QString, int> buses)
 
     for (int i = 0; i < count_item_in_bus_schedule; i++)
     {
+        if (buses[keys[i]] == 0)
+            continue;
         font.setPointSize(350/(int)scale);
         font.setBold(true);
         TableItemDelegate* bus = new TableItemDelegate(QString("%1").arg(buses[keys[i]]), 0, font);
