@@ -26,7 +26,7 @@ class ContentLoader : public QObject
 public:
     ContentLoader(QObject *parent = 0);
 
-    QString LoadNews();
+    QList<QString> LoadNews();
     QMap<QString, int> LoadBus();
     QString LoadTemperature();
 

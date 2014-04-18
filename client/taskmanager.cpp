@@ -31,7 +31,8 @@ TaskManager::TaskManager(MainWindow *window, ContentLoader *loader, QObject *par
 
     this->load_news_timer = new QTimer();
     connect(this->load_news_timer, SIGNAL(timeout()), this, SLOT(load_news()));
-    this->load_news_timer->start(10 * 60 * 1000);
+    this->load_news_timer->start(60 * 1000);
+    this->news_index = -1;
     this->load_news();
 
     QTimer::singleShot(1000, this, SLOT(getCurrentTasks()));
@@ -229,6 +230,12 @@ void TaskManager::load_bus()
 void TaskManager::load_news()
 {
     this->load_bus_timer->stop();
-    this->main_window->setNews(this->content_loader->LoadNews());
+    this->news_index ++;
+    if (this->news_index >= this->news_texts.length()){
+        this->news_texts=this->content_loader->LoadNews();
+        this->news_index = 0;
+    }
+    if(this->news_index<this->news_texts.length()) //handle empty load result
+        this->main_window->setNews(this->news_texts[this->news_index]);
     this->load_bus_timer->start();
 }

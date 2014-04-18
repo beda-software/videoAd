@@ -35,15 +35,15 @@ QMap<QString, int> ContentLoader::LoadBus()
     return result;
 }
 
-QString ContentLoader::LoadNews(){
+QList<QString> ContentLoader::LoadNews(){
     QByteArray data = this->request_get("http://krasnoyarsk.sibnovosti.ru/rss");
     QXmlStreamReader xml;
     xml.addData(data);
 
     QList<news> news_list;
+    QList<QString> news_text_list;
     news current;
     QString currentTag;
-    QString result;
 
     int index=0;
 
@@ -80,9 +80,9 @@ QString ContentLoader::LoadNews(){
     }
 
     foreach(news item, news_list){
-        result += "<h2>"+ item.title+"</h2><br/>"+item.full_text;
+        news_text_list.append("<h2>"+ item.title+"</h2><br/>"+item.full_text);
     }
-    return result;
+    return news_text_list;
 }
 
 QByteArray ContentLoader::request_get(QString url)
