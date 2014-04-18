@@ -10,7 +10,7 @@ ContentLoader::ContentLoader(QObject *parent) :
     this->bus_stop_number = settings.value("bus_stop_number", 1).toInt();
 }
 
-QMap<int, QString> ContentLoader::LoadBus()
+QMap<QString, int> ContentLoader::LoadBus()
 {
     QString url = QString("http://mu-kgt.ru/externalservice/strittv/getStopArriveTime.php?stop=%1").arg(this->bus_stop_number);
     QString data = this->request_get(url);
@@ -24,12 +24,12 @@ QMap<int, QString> ContentLoader::LoadBus()
 
     QDomElement doc_elem = document.documentElement();
     QDomNodeList node_list = doc_elem.elementsByTagName("row");
-    QMap<int, QString> result;
+    QMap<QString, int> result;
     for (int i = 0; i < node_list.length(); i++)
     {
         QString text = node_list.at(i).toElement().text();
         QStringList parts = text.split(",");
-        result[parts[1].toInt()] = parts[3];
+        result[parts[3]] = parts[1].toInt();
     }
 
     return result;

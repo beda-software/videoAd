@@ -37,7 +37,6 @@ TaskManager::TaskManager(MainWindow *window, ContentLoader *loader, QObject *par
     QTimer::singleShot(1000, this, SLOT(getCurrentTasks()));
 }
 
-
 void TaskManager::getCurrentTasks()
 {
     QList<QTime> times = this->play_list.keys();
@@ -56,10 +55,15 @@ void TaskManager::getCurrentTasks()
     QList<Contents> contents = this->play_list[result];
     this->current_played_time = result;
     foreach (Contents content, contents)
-        if (content.type == "video")
+        if (content.type == "video" || content.type == "image" )
             this->current_videos.append(content.param);
         else
             this->current_texts.append(content.param);
+
+    if (this->current_videos.size())
+        this->main_window->setDisplayMode(MainWindow::ALL);
+    else
+        this->main_window->setDisplayMode(MainWindow::TEXT);
 
     this->text_finished();
     this->video_finished();
@@ -125,10 +129,15 @@ void TaskManager::updateTasksList()
     QList<Contents> contents = this->play_list[next_task];
     this->current_played_time = next_task;
     foreach (Contents content, contents)
-        if (content.type == "video")
+        if (content.type == "video" || content.type == "image" )
             this->current_videos.append(content.param);
         else
             this->current_texts.append(content.param);
+
+    if (this->current_videos.size())
+        this->main_window->setDisplayMode(MainWindow::ALL);
+    else
+        this->main_window->setDisplayMode(MainWindow::TEXT);
 
     this->text_finished();
     this->video_finished();
@@ -160,7 +169,7 @@ void TaskManager::updatePlaylist()
     bool finded = false;
     for (int i = 0; i < DAYS_BACK_MAX; i++)
     {
-        QString dir_name = cur.toString("dd.MM.yyyy");
+        QString dir_name = cur.toString("yyyy-MM-dd");
         if (this->current_directory->cd(dir_name))
         {
             finded = true;

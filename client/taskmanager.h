@@ -20,9 +20,9 @@
 #include "contentloader.h"
 
 
-#define IMAGE_DURATION 10
-#define TEXT_DURATION 10
-#define DAYS_BACK_MAX 5
+#define IMAGE_DURATION 30
+#define TEXT_DURATION 8
+#define DAYS_BACK_MAX 30
 
 
 struct Contents
@@ -59,7 +59,6 @@ private:
     void updatePlaylistFromFile(QString filename);
 
     QTime getNextTaskTime();
-
 
     int current_video_index;
     QStringList current_videos;

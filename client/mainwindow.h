@@ -15,6 +15,8 @@
 #include <QGraphicsPixmapItem>
 #include <QTime>
 
+class ContentLoader;
+class TaskManager;
 
 namespace Ui {
 class MainWindow;
@@ -22,15 +24,20 @@ class MainWindow;
 
 class MainWindow : public QMainWindow
 {
+
     Q_OBJECT
     
 public:
+    enum DisplayMode{ TEXT=1, VIDEO=2, ALL=3 };
+    enum ShowMode {DAY, NIGHT, OFF, ON};
+
+    void setDisplayMode(MainWindow::DisplayMode);
     void stopAll();
     void displayNextAdvicement(QString text);
     void displayVideo(QString path);
     void displayImage(QString path);
 
-    void setBus(QMap<int, QString> buses);
+    void setBus(QMap<QString, int> buses);
     void setNews(QString news_text);
 
     void updateLabels(QString temperature);
@@ -43,21 +50,23 @@ signals:
 
 private slots:
     void player_state_changed(QMediaPlayer::State);
+
+    void off();
+
     
 private:
+    int isNight();
     void displayImage(QGraphicsView* view, QString path);
 
-
-
-    Ui::MainWindow *ui;
+    QSettings settings;
+    ContentLoader* loader;
+    TaskManager* task_manager ;
 
     QTableWidget* bus_schedule;
 
     QLabel* news_label_time;
     QLabel* news_label_temperature;
     QTextBrowser* news_text;
-    QVBoxLayout* news_box;
-    QHBoxLayout* news_with_bus_schedule;
 
     QGraphicsView* video_view;
     QMediaPlayer* video_player;
@@ -65,12 +74,10 @@ private:
 
     int current_advicement_index;
     QList<QTextBrowser*> text_advicements;
-    QVBoxLayout* text_box;
+    QLabel* advicement_label;
+    int current_advicement_size;
 
     QGraphicsView* picture_krasnoyarsk;
-
-
-
 };
 
 #endif // MAINWINDOW_H
