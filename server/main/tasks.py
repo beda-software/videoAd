@@ -4,6 +4,7 @@ import shlex
 import subprocess
 from os import path
 from filebrowser.base import FileObject
+from videoad.settings import COMPRESS_RESOLUTION
 
 
 @task
@@ -20,11 +21,11 @@ def compress_video_task(video):
 
     ext, file_path = video.file_video.extension, video.file_video.path_full
 
-    if '_compress' in file_path:
+    if video.compress:
         return
 
     out = ''.join(file_path.split('.')[:-1] + ['_compress%s' % ext])
-    command = 'ffmpeg -i %s -s 320x240 %s -loglevel error -y' % (file_path, out)
+    command = 'ffmpeg -i %s -s %s %s -loglevel error -y' % (file_path, COMPRESS_RESOLUTION, out)
 
     process = subprocess.Popen(shlex.split(str(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
     output, errors = process.communicate()
@@ -32,11 +33,12 @@ def compress_video_task(video):
 
     if path.exists(out):
         video.file_video = FileObject(out)
+        video.compress = True
         video.save()
 
     # log
     OsCommandLog.objects.create(command=command, ouput=output, errors=errors, return_code=returncode)
 
     # create or update days for video
-    for day in video.days:
+    for day in video.days.all():
         create_update_day(None, day, action='post_add')

@@ -44,16 +44,11 @@ MEDIA_URL = '/media/'
 STATICFILES_DIRS = ()
 TEMPLATE_DIRS = ()
 
-BROKER_URL = "amqp://lkot:mqpassword@localhost:5672/mqhost"
-
 CELERY_ACCEPT_CONTENT = ['json']
 
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
-CELERY_TIMEZONE = 'Europe/Madrid'
-
-CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
 CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 FILEBROWSER_MAX_UPLOAD_SIZE = 2147483648
@@ -142,6 +137,8 @@ LOGGING = {
         },
     }
 }
+
+COMPRESS_RESOLUTION = '1080x720'
 
 for item in LOCAL_APPS:
     INSTALLED_APPS+=(item,)

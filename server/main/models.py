@@ -85,6 +85,7 @@ class VideoAd(AdMixin, models.Model):
     file_video = FileBrowseField('Видео файл', max_length=255, blank=True, null=True)
     partner = models.ForeignKey(Partner, verbose_name='Владелец объявления')
     prolongation = models.TimeField('Длительность видео', blank=True, null=True)
+    compress = models.BooleanField('Видео пережато', default=False, blank=True)
 
     def __unicode__(self):
         return '%s: %s' % (self.partner.base_name, self.file_video.filename)
@@ -128,9 +129,9 @@ class TextAd(AdMixin, models.Model):
 class Days(models.Model):
     date = models.DateField('Дата')
 
-    video_ad = models.ManyToManyField(VideoAd, verbose_name='Видео', blank=True, null=True)
-    image_ad = models.ManyToManyField(ImageAd, verbose_name='Изображение', blank=True, null=True)
-    text_ad = models.ManyToManyField(TextAd, verbose_name='Тексты', blank=True, null=True)
+    video_ad = models.ManyToManyField(VideoAd, verbose_name='Видео', blank=True, null=True, related_name='days')
+    image_ad = models.ManyToManyField(ImageAd, verbose_name='Изображение', blank=True, null=True, related_name='days')
+    text_ad = models.ManyToManyField(TextAd, verbose_name='Тексты', blank=True, null=True, related_name='days')
 
     video_count = models.PositiveIntegerField('Количество показов видео', default=0)
     show_text = models.BooleanField('Показывать текст в блоке видео')
@@ -192,21 +193,11 @@ def create_update_day(sender, instance, **kwargs):
     if kwargs['action'] != 'post_add':
         return
 
-    model, field = instance._meta.model, ''
+    model = instance._meta.model
 
-    if model == VideoAd:
-        field = 'video_ad'
+    field = {VideoAd: 'video_ad', TextAd: 'text_ad', ImageAd: 'image_ad'}.get(model, None)
 
-        # test to compress
-        if not '_compress' in instance.file_video.filename:
-            return
-
-    elif model == TextAd:
-        field = 'text_ad'
-    elif model == ImageAd:
-        field = 'image_ad'
-
-    if field == '':
+    if not field or (field == 'video_ad' and not instance.compress):
         return
 
     for terminal in instance.terminals.all():
@@ -226,14 +217,6 @@ def create_update_day(sender, instance, **kwargs):
 
             getattr(day, field).add(instance)
             day.save()
-
-
-# not used
-def create_playlist(sender, instance, **kwargs):
-    if 'action' in kwargs and kwargs['action'] != 'post_add':
-        return
-
-    create_playlist_task.delay(day=instance)
 
 
 def compress_video(sender, instance, **kwargs):

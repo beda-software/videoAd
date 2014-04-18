@@ -7,7 +7,7 @@ from django.core.management import BaseCommand
 from main.helper import PlaylistGenerator
 from main.models import Days
 
-RE_DATE = re.compile("\d\d\d\d-\d\d-\d\d")
+RE_DATE = re.compile("\d{4}-\d{2}-\d{2}")
 
 class Command(BaseCommand):
     """Генерирует playlist для одного дня"""
