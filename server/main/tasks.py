@@ -39,6 +39,5 @@ def compress_video_task(video):
     # log
     OsCommandLog.objects.create(command=command, ouput=output, errors=errors, return_code=returncode)
 
-    # create or update days for video
-    for day in video.days.all():
-        create_update_day(None, day, action='post_add')
+    # create or update day for video
+    create_update_day(None, video, action='post_add')
