@@ -16,14 +16,31 @@ class Command(BaseCommand):
         make_option('-d', '--date', dest='date', help='Date in the format YYYY-MM-DD'),
         make_option('-l', '--list', dest='list_days', action="store_true", default=False, help='Displays a list of dates'),
         make_option('-a', '--all', dest='all_days', action="store_true", default=False, help='Generates plailist for all days'),
+        make_option('-t', '--today', dest='today', action="store_true", default=False, help='Generates plailist for today'),
     )
 
-    def handle(self, date, list_days, all_days, *args, **options):
-        print "List of available days: "
+    def handle(self, date, today, list_days, all_days, *args, **options):
         if list_days:
+            print "List of available days: "
             for day in Days.objects.all():
                 print str(day.date)
             print "Total days: %s" % Days.objects.count()
+            return
+
+        if today:
+            print "Generates plailist for today %s ..." % datetime.datetime.now().strftime("%Y-%m-%d")
+
+            try:
+                day = Days.objects.get(date=datetime.datetime.now())
+            except Days.DoesNotExist:
+                print "Day %s does not exist" % date
+                return
+            else:
+                generator = PlaylistGenerator(day=day)
+                generator.run()
+
+            print "\nGeneration successfully completed"
+
             return
 
         if all_days:
