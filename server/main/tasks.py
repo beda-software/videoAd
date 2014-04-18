@@ -7,6 +7,7 @@ from filebrowser.base import FileObject
 
 
 @task
+# not used
 def create_playlist_task(day):
     g = PlaylistGenerator(day=day)
     g.run()
