@@ -88,6 +88,7 @@ class VideoAdminForm(forms.ModelForm):
 
 class VideoAdmin(admin.ModelAdmin):
     form = VideoAdminForm
+    readonly_fields = ['compress']
 
 
 class DaysAdmin(admin.ModelAdmin):
