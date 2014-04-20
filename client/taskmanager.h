@@ -79,6 +79,8 @@ private:
     ContentLoader* content_loader;
     QTimer* load_bus_timer;
     QTimer* load_news_timer;
+    int news_index;
+    QList<QString> news_texts;
 };
 
 #endif // TASKMANAGER_H
