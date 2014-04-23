@@ -79,12 +79,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
         this->advicement_label = new QLabel(this);
 
-        int advicements_count = 7;
+        int advicements_count = 4;
         this->current_advicement_index = 0;
         for (int i = 0; i < advicements_count; i++)
         {
             QTextBrowser* advicement = new QTextBrowser(this);
-            advicement->setFixedSize(5336/scale, 592/scale);
+            advicement->setFixedSize(5336/scale, 3*592/scale);
             QFont font = advicement->font();
             font.setPointSize((int)180/scale);
             advicement->setFont(font);
@@ -93,7 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
         }
 
         bool vertical = settings.value("vertical", true).toBool();
-        this->showFullScreen();
+	 this->showFullScreen();
         if (vertical)
         {
             this->setFixedSize(6244/scale, 10969/scale);
@@ -304,7 +304,7 @@ void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
 
     if (vertical) {
         if(mode == MainWindow::ALL) {
-            this->current_advicement_size = 3;
+            this->current_advicement_size = 1;
             this->video_view->show();
             this->video_view->setFixedSize(6544/scale, 4000/scale);
             this->video_view->move(0/scale, 4850/scale);
@@ -316,8 +316,8 @@ void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
 
             int start_y_pos = 9060/scale;
             for (int i=0; i<this->current_advicement_size; i++) {
-                this->text_advicements[i]->setFixedSize(5320/scale, 592/scale);
-                this->text_advicements[i]->move(540/scale, start_y_pos + i*700/scale);
+                this->text_advicements[i]->setFixedSize(5320/scale, 3*592/scale);
+                this->text_advicements[i]->move(540/scale, start_y_pos + 3*i*700/scale);
                 this->text_advicements[i]->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 this->text_advicements[i]->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 QFont font = this->text_advicements[i]->font();
@@ -330,7 +330,7 @@ void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
 
         }
         if(mode == MainWindow::TEXT){
-            this->current_advicement_size = 7;
+            this->current_advicement_size = 4;
             this->video_view->hide();
 
             /*this->advicement_label->setStyleSheet("QLabel { background-color:#D9D9D9}");
@@ -344,27 +344,27 @@ void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
                 QFont font = this->text_advicements[i]->font();
                 font.setPointSize(400/scale);
                 this->text_advicements[i]->setFont(font);
-                this->text_advicements[i]->setFixedSize(5320/scale, 592/scale);
-                this->text_advicements[i]->move(540/scale, start_y_pos + i*700/scale);
+                this->text_advicements[i]->setFixedSize(3*5320/scale, 3*592/scale);
+                this->text_advicements[i]->move(540/scale, start_y_pos + 3*i*700/scale);
                 this->text_advicements[i]->show();
             }
         }
     }
     else {
         if(mode == MainWindow::ALL) {
-            this->current_advicement_size = 3;
+            this->current_advicement_size = 1;
             this->video_view->show();
             this->video_view->setFixedSize(6428/scale, 3454/scale);
             this->video_view->move(4730/scale, 0/scale);
 
             this->advicement_label->setStyleSheet("QLabel { background-color:#D9D9D9}");
-            this->advicement_label->setFixedSize(6428/scale, 2805/scale);
+            this->advicement_label->setFixedSize(3*6428/scale, 2805/scale);
             this->advicement_label->move(4870/scale, 3455/scale);
 
             int start_y_pos = 3817;
             for (int i=0; i<this->current_advicement_size; i++) {
-                this->text_advicements[i]->setFixedSize(5336/scale, 592/scale);
-                this->text_advicements[i]->move(5192/scale, start_y_pos/scale + i*726/scale);
+                this->text_advicements[i]->setFixedSize(5336/scale, 3*592/scale);
+                this->text_advicements[i]->move(5192/scale, start_y_pos/scale + 3*i*726/scale);
                 this->text_advicements[i]->show();
             }
             for (int i=this->current_advicement_size;i<this->text_advicements.size(); i++)
@@ -372,7 +372,7 @@ void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
 
         }
         if(mode == MainWindow::TEXT){
-            this->current_advicement_size = 7;
+            this->current_advicement_size = 4;
             this->video_view->hide();
 
             this->advicement_label->setStyleSheet("QLabel { background-color:#D9D9D9}");
@@ -382,8 +382,8 @@ void MainWindow::setDisplayMode(MainWindow::DisplayMode mode){
             int start_y_pos = 726/scale;
             for (int i=0; i<this->text_advicements.size(); i++) {
                 this->text_advicements[i]->show();
-                this->text_advicements[i]->setFixedSize(5336/scale, 592/scale);
-                this->text_advicements[i]->move(5192/scale, start_y_pos + i*726/scale);
+                this->text_advicements[i]->setFixedSize(5336/scale, 3*592/scale);
+                this->text_advicements[i]->move(5192/scale, start_y_pos + 3*i*726/scale);
                 this->text_advicements[i]->show();
             }
         }
